@@ -41,8 +41,6 @@ RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
 ENV SQLX_OFFLINE=true
 RUN dx bundle --package app --platform web --release
-# Debug: show what dx bundle produced
-RUN ls -la /app/target/dx/ && find /app/target/dx/ -maxdepth 3 -type f | head -30
 
 # =============================================================================
 # Stage 4: Runtime — minimal image with just the bundled output
@@ -62,9 +60,6 @@ WORKDIR /app
 # Copy the bundled fullstack output from the builder
 # dx bundle --platform web puts output in target/dx/<app-name>/release/web/
 COPY --from=builder /app/target/dx/app/release/web/ ./
-
-# Debug: show what was copied
-RUN ls -la ./ && echo "---" && find . -maxdepth 2 -type f | head -30
 
 # Ensure the server binary is executable
 RUN chmod +x ./app
