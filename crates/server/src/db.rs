@@ -1,19 +1,18 @@
-use sqlx::{Executor, Pool, Sqlite};
+use sqlx::{Executor, Pool, Postgres};
 use tokio::sync::OnceCell;
 
-static DB: OnceCell<Pool<Sqlite>> = OnceCell::const_new();
+static DB: OnceCell<Pool<Postgres>> = OnceCell::const_new();
 
-async fn init_db() -> Pool<Sqlite> {
-    let database_url =
-        std::env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite://app.db?mode=rwc".to_string());
+async fn init_db() -> Pool<Postgres> {
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-    let pool = sqlx::sqlite::SqlitePool::connect(&database_url)
+    let pool = sqlx::postgres::PgPool::connect(&database_url)
         .await
         .expect("Failed to connect to database");
 
     pool.execute(
         "CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id BIGSERIAL PRIMARY KEY,
             username TEXT NOT NULL,
             display_name TEXT NOT NULL
         )",
@@ -25,6 +24,6 @@ async fn init_db() -> Pool<Sqlite> {
 }
 
 /// Get or initialize the database connection pool.
-pub async fn get_db() -> &'static Pool<Sqlite> {
+pub async fn get_db() -> &'static Pool<Postgres> {
     DB.get_or_init(init_db).await
 }

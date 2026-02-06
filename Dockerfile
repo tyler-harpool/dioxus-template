@@ -39,7 +39,7 @@ RUN cargo chef cook --release --recipe-path recipe.json
 
 # Copy full source and bundle
 COPY . .
-RUN dx bundle --platform web --release
+RUN dx bundle --package app --platform web --release
 
 # =============================================================================
 # Stage 4: Runtime — minimal image with just the bundled output
@@ -49,7 +49,7 @@ FROM debian:bookworm-slim AS runtime
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     libssl3 \
-    libsqlite3-0 \
+    libpq5 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -s /bin/bash appuser

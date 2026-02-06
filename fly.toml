@@ -1,6 +1,10 @@
 # fly.toml — Fly.io application configuration
-# Run `fly launch` to generate your app name, then update this file.
 # Docs: https://fly.io/docs/reference/configuration/
+#
+# Postgres setup:
+#   fly postgres create --name dioxus-app-db --region dfw
+#   fly postgres attach dioxus-app-db
+# This automatically sets DATABASE_URL as a secret on your app.
 
 app = "dioxus-app"
 primary_region = "dfw"

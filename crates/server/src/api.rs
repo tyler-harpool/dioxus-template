@@ -25,7 +25,7 @@ pub async fn get_user(user_id: i64) -> Result<User, ServerFnError> {
     let db = get_db().await;
     let user = sqlx::query_as!(
         User,
-        "SELECT id, username, display_name FROM users WHERE id = ?",
+        "SELECT id, username, display_name FROM users WHERE id = $1",
         user_id
     )
     .fetch_one(db)
@@ -71,17 +71,15 @@ pub async fn list_users() -> Result<Vec<User>, ServerFnError> {
 #[server]
 pub async fn create_user(username: String, display_name: String) -> Result<User, ServerFnError> {
     let db = get_db().await;
-    let id = sqlx::query("INSERT INTO users (username, display_name) VALUES (?, ?)")
-        .bind(&username)
-        .bind(&display_name)
-        .execute(db)
-        .await
-        .map_err(|e| ServerFnError::new(e.to_string()))?
-        .last_insert_rowid();
-
-    Ok(User {
-        id,
+    let user = sqlx::query_as!(
+        User,
+        "INSERT INTO users (username, display_name) VALUES ($1, $2) RETURNING id, username, display_name",
         username,
-        display_name,
-    })
+        display_name
+    )
+    .fetch_one(db)
+    .await
+    .map_err(|e| ServerFnError::new(e.to_string()))?;
+
+    Ok(user)
 }
