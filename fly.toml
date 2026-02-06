@@ -1,10 +1,25 @@
 # fly.toml — Fly.io application configuration
 # Docs: https://fly.io/docs/reference/configuration/
 #
-# Postgres setup:
-#   fly postgres create --name dioxus-app-db --region dfw
-#   fly postgres attach dioxus-app-db
-# This automatically sets DATABASE_URL as a secret on your app.
+# === First-time setup ===
+#
+# 1. Create the app (if not already done):
+#      fly launch --no-deploy
+#
+# 2. Create a Postgres cluster:
+#      fly postgres create --name dioxus-app-db --region dfw --vm-size shared-cpu-1x --volume-size 1
+#
+# 3. Attach Postgres to the app (sets DATABASE_URL secret automatically):
+#      fly postgres attach dioxus-app-db
+#
+# 4. Deploy:
+#      fly deploy
+#
+# === Useful commands ===
+#
+#   fly postgres connect -a dioxus-app-db     # psql into the database
+#   fly secrets list                           # verify DATABASE_URL is set
+#   fly logs                                   # view app logs
 
 app = "dioxus-app"
 primary_region = "dfw"
