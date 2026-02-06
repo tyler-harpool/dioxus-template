@@ -37,8 +37,9 @@ RUN rustup target add wasm32-unknown-unknown
 COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 
-# Copy full source and bundle
+# Copy full source and bundle (offline mode uses committed .sqlx/ cache)
 COPY . .
+ENV SQLX_OFFLINE=true
 RUN dx bundle --package app --platform web --release
 
 # =============================================================================

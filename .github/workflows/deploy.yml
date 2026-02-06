@@ -12,10 +12,39 @@ jobs:
   deploy:
     name: Deploy to Fly.io
     runs-on: ubuntu-latest
-    # Only deploy after CI passes
-    needs: []
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: dioxus
+          POSTGRES_PASSWORD: dioxus
+          POSTGRES_DB: dioxus_app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgres://dioxus:dioxus@localhost:5432/dioxus_app
     steps:
       - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install sqlx-cli
+        run: cargo install sqlx-cli --no-default-features --features postgres
+
+      - name: Run migrations
+        run: cargo sqlx migrate run
+
+      - name: Generate sqlx offline cache
+        run: cargo sqlx prepare --workspace
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
