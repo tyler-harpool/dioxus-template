@@ -1,0 +1,30 @@
+[package]
+name = "server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+shared-types = { path = "../shared-types", features = [] }
+dioxus = { workspace = true }
+serde = { workspace = true }
+
+# Server-only dependencies (gated behind feature flag)
+sqlx = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true }
+reqwest = { workspace = true, optional = true }
+utoipa = { workspace = true, optional = true }
+utoipa-axum = { workspace = true, optional = true }
+utoipa-swagger-ui = { workspace = true, optional = true }
+
+[features]
+default = []
+server = [
+    "dioxus/server",
+    "dep:sqlx",
+    "dep:tokio",
+    "dep:reqwest",
+    "dep:utoipa",
+    "dep:utoipa-axum",
+    "dep:utoipa-swagger-ui",
+    "shared-types/openapi",
+]

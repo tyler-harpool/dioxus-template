@@ -1,0 +1,17 @@
+[application]
+name = "dioxus-app"
+default_platform = "web"
+
+[application.tools]
+app = { manifest = "crates/app/Cargo.toml" }
+
+[web.app]
+title = "Dioxus App"
+
+[web.watcher]
+watch_path = ["crates"]
+reload_html = true
+
+[web.resource.dev]
+style = []
+script = []
