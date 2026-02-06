@@ -3,7 +3,6 @@
 /// These values mirror the CSS custom properties in `variables.css`.
 /// Prefer using CSS variables in component stylesheets — use these constants
 /// only for programmatic styling or platform-specific rendering.
-
 /// Dark theme is the default.
 pub const DEFAULT_THEME: &str = "dark";
 

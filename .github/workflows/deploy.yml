@@ -44,7 +44,7 @@ jobs:
         run: cargo sqlx migrate run
 
       - name: Generate sqlx offline cache
-        run: cargo sqlx prepare --workspace
+        run: cargo sqlx prepare --workspace -- --all-targets --all-features
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
