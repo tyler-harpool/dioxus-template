@@ -67,12 +67,10 @@ fn Users() -> Element {
                             on_click: move |_| async move {
                                 let username = new_username();
                                 let display_name = new_display_name();
-                                if !username.is_empty() && !display_name.is_empty() {
-                                    if create_user(username, display_name).await.is_ok() {
-                                        users.restart();
-                                        new_username.set(String::new());
-                                        new_display_name.set(String::new());
-                                    }
+                                if !username.is_empty() && !display_name.is_empty() && create_user(username, display_name).await.is_ok() {
+                                    users.restart();
+                                    new_username.set(String::new());
+                                    new_display_name.set(String::new());
                                 }
                             },
                         }
