@@ -41,8 +41,8 @@ fn Home() -> Element {
 #[component]
 fn Users() -> Element {
     let mut users = use_server_future(list_users)?;
-    let mut new_username = use_signal(|| String::new());
-    let mut new_display_name = use_signal(|| String::new());
+    let mut new_username = use_signal(String::new);
+    let mut new_display_name = use_signal(String::new);
 
     rsx! {
         PageLayout { title: "Users".to_string(),
@@ -68,7 +68,7 @@ fn Users() -> Element {
                                 let username = new_username();
                                 let display_name = new_display_name();
                                 if !username.is_empty() && !display_name.is_empty() {
-                                    if let Ok(_) = create_user(username, display_name).await {
+                                    if create_user(username, display_name).await.is_ok() {
                                         users.restart();
                                         new_username.set(String::new());
                                         new_display_name.set(String::new());
