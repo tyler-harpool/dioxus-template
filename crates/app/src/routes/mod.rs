@@ -36,8 +36,12 @@ pub enum Route {
 #[component]
 fn AppLayout() -> Element {
     let route: Route = use_route();
-    let mut theme_is_light = use_signal(|| false);
     let profile: ProfileState = use_context();
+
+    let mut theme_state = use_context_provider(|| shared_ui::theme::ThemeState {
+        family: Signal::new("cyberpunk".to_string()),
+        is_dark: Signal::new(true),
+    });
 
     let page_title = match &route {
         Route::Dashboard {} => "Dashboard",
@@ -109,14 +113,10 @@ fn AppLayout() -> Element {
                             "Light Mode"
                         }
                         Switch {
-                            checked: theme_is_light(),
+                            checked: (theme_state.is_dark)(),
                             on_checked_change: move |checked: bool| {
-                                theme_is_light.set(checked);
-                                if checked {
-                                    shared_ui::theme::set_theme("light");
-                                } else {
-                                    shared_ui::theme::set_theme("cyberpunk");
-                                }
+                                theme_state.is_dark.set(checked);
+                                theme_state.apply();
                             },
                             SwitchThumb {}
                         }

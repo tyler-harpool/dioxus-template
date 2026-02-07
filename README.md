@@ -123,10 +123,100 @@ Once the dev server is running (`make dev`), navigate to `/docs` for the interac
 
 The app ships with two themes defined in `crates/app/assets/cyberpunk-theme.css`:
 
-- **Cyberpunk (dark)** — neon cyan accents on deep blue-black backgrounds
+- **Cyberpunk** — the default dark theme with neon cyan accents on deep blue-black backgrounds
 - **Light** — clean whites with teal accents
 
-Toggle between them using the switch in the sidebar footer. Components automatically adapt via CSS custom properties.
+Toggle between them using the switch in the sidebar footer. All 38 components automatically adapt via CSS custom properties.
+
+### Creating a Custom Theme
+
+All 38 UI components are styled through CSS custom properties, so adding a new theme requires zero Rust changes. Just define your palette and activate it.
+
+**Step 1 — Add a `[data-theme]` block** to `crates/app/assets/cyberpunk-theme.css`:
+
+```css
+[data-theme="solar"] {
+    /* Dark/light mode flag (pick one) */
+    --dark: initial;   /* set --dark for dark themes */
+    --light: ;         /* leave empty for dark themes (swap for light) */
+
+    /* Primary palette — backgrounds, surfaces, borders (dark to light) */
+    --primary-color-1: #002b36;
+    --primary-color-2: #073642;
+    --primary-color-3: #0a3f4e;
+    --primary-color-4: #0e4d5e;
+    --primary-color-5: #155a6b;
+    --primary-color-6: #1c6e80;
+    --primary-color-7: #268399;
+    --primary-color-8: #2aa198;
+    --primary-color-9: #35c4ba;
+
+    /* Secondary palette — text colors (light to dark) */
+    --secondary-color-1: #fdf6e3;
+    --secondary-color-2: #eee8d5;
+    --secondary-color-3: #c4b99a;
+    --secondary-color-4: #93a1a1;
+    --secondary-color-5: #657b83;
+    --secondary-color-6: #586e75;
+    --secondary-color-7: #4a6068;
+
+    /* Semantic mappings (point these at palette slots) */
+    --color-background: var(--primary-color-2);
+    --color-surface: var(--primary-color-3);
+    --color-surface-raised: var(--primary-color-5);
+    --color-surface-dialog: var(--primary-color-6);
+    --color-on-surface: var(--secondary-color-1);
+    --color-on-surface-muted: var(--secondary-color-4);
+    --color-border: var(--primary-color-6);
+
+    /* Accent colors */
+    --color-primary: #b58900;
+    --color-primary-hover: #d4a017;
+    --color-on-primary: #002b36;
+
+    --color-secondary: #6c71c4;
+    --color-secondary-hover: #8a8fd6;
+    --color-on-secondary: #ffffff;
+
+    --color-danger: #dc322f;
+    --color-on-danger: #ffffff;
+    --color-success: #859900;
+    --color-on-success: #002b36;
+    --color-warning: #cb4b16;
+    --color-on-warning: #ffffff;
+
+    --focused-border-color: var(--color-primary);
+
+    /* Shadows and glow effects */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.4);
+    --cyber-neon-glow: 0 0 8px rgba(181, 137, 0, 0.4);
+    --cyber-neon-glow-strong: 0 0 12px rgba(181, 137, 0, 0.6);
+    --cyber-scanline-opacity: 0;
+}
+```
+
+**Step 2 — Activate it** from anywhere in your app:
+
+```rust
+shared_ui::theme::set_theme("solar");
+```
+
+That's it. Every component picks up the new palette automatically. The theme persists across page reloads via a cookie and syncs across tabs.
+
+#### Variable Reference
+
+| Variable Group | Purpose |
+| --- | --- |
+| `--primary-color-1` to `--primary-color-9` | Background/surface palette (darkest to lightest) |
+| `--secondary-color-1` to `--secondary-color-7` | Text palette (lightest to darkest) |
+| `--color-background`, `--color-surface`, `--color-surface-raised`, `--color-surface-dialog` | Semantic surface mappings |
+| `--color-on-surface`, `--color-on-surface-muted` | Text on surfaces |
+| `--color-primary`, `--color-primary-hover`, `--color-on-primary` | Primary accent (buttons, links, focus rings) |
+| `--color-secondary`, `--color-danger`, `--color-success`, `--color-warning` | Additional accent colors |
+| `--cyber-neon-glow`, `--cyber-neon-glow-strong` | Focus/hover glow effects |
+| `--cyber-scanline-opacity` | Scanline overlay on primary buttons (0 to disable) |
 
 ## Offline Builds
 

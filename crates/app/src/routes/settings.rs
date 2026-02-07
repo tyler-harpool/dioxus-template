@@ -7,15 +7,18 @@ use shared_ui::{
     CalendarGrid, CalendarHeader, CalendarMonthTitle, CalendarNavigation, CalendarNextMonthButton,
     CalendarPreviousMonthButton, CalendarSelectMonth, CalendarSelectYear, Card, CardContent,
     Collapsible, CollapsibleContent, CollapsibleTrigger, Date, Form, Input, Label, MenubarContent,
-    MenubarItem, MenubarMenu, MenubarRoot, MenubarSeparator, MenubarTrigger, RadioGroup,
-    RadioGroupItem, Separator, Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter,
-    SheetHeader, SheetSide, SheetTitle, Switch, SwitchThumb, Textarea, ToastOptions, Toggle,
-    UtcDateTime,
+    MenubarItem, MenubarMenu, MenubarRoot, MenubarSeparator, MenubarTrigger, SelectContent,
+    SelectItem, SelectRoot, SelectTrigger, SelectValue, Separator, Sheet, SheetClose, SheetContent,
+    SheetDescription, SheetFooter, SheetHeader, SheetSide, SheetTitle, Switch, SwitchThumb,
+    Textarea, ToastOptions, Toggle, UtcDateTime,
 };
 
 /// Settings page with menubar navigation, accordion sections, and advanced collapsible.
 #[component]
 pub fn Settings() -> Element {
+    // Theme state (shared with layout via context)
+    let mut theme_state: shared_ui::theme::ThemeState = use_context();
+
     // Profile state (shared with layout via context)
     let profile: ProfileState = use_context();
     let mut profile_name = profile.display_name;
@@ -193,27 +196,27 @@ pub fn Settings() -> Element {
                         div {
                             class: "settings-section-lg",
 
-                            // Theme selection via RadioGroup
+                            // Theme family selector
                             div {
                                 class: "settings-theme-group",
                                 span {
                                     class: "settings-theme-label",
                                     "Theme"
                                 }
-                                RadioGroup {
-                                    default_value: "cyberpunk",
-                                    on_value_change: move |val: String| {
-                                        shared_ui::theme::set_theme(&val);
+                                SelectRoot::<String> {
+                                    default_value: Some((theme_state.family)()),
+                                    on_value_change: move |val: Option<String>| {
+                                        if let Some(v) = val {
+                                            theme_state.family.set(v);
+                                            theme_state.apply();
+                                        }
                                     },
-                                    label {
-                                        class: "radio-option",
-                                        RadioGroupItem { value: "cyberpunk", index: 0usize }
-                                        span { "Cyberpunk" }
+                                    SelectTrigger {
+                                        SelectValue {}
                                     }
-                                    label {
-                                        class: "radio-option",
-                                        RadioGroupItem { value: "light", index: 1usize }
-                                        span { "Light" }
+                                    SelectContent {
+                                        SelectItem::<String> { value: "cyberpunk", index: 0usize, "Cyberpunk" }
+                                        SelectItem::<String> { value: "solar", index: 1usize, "Solarized" }
                                     }
                                 }
                             }

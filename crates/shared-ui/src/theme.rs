@@ -1,20 +1,67 @@
 use dioxus::prelude::*;
 
-/// Available themes for the application.
+/// Theme families available in the application.
+///
+/// Each family provides both a dark and light variant.
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
-pub enum Theme {
+pub enum ThemeFamily {
     #[default]
     Cyberpunk,
-    Light,
+    Solar,
 }
 
-impl Theme {
-    /// CSS attribute value for the data-theme attribute.
+impl ThemeFamily {
+    /// Internal key used for storage and Select values.
     pub fn as_str(&self) -> &'static str {
         match self {
-            Theme::Cyberpunk => "cyberpunk",
-            Theme::Light => "light",
+            ThemeFamily::Cyberpunk => "cyberpunk",
+            ThemeFamily::Solar => "solar",
         }
+    }
+
+    /// Human-readable name for display in UI.
+    pub fn display_name(&self) -> &'static str {
+        match self {
+            ThemeFamily::Cyberpunk => "Cyberpunk",
+            ThemeFamily::Solar => "Solarized",
+        }
+    }
+
+    /// Parse a family key string, falling back to Cyberpunk.
+    pub fn from_key(s: &str) -> Self {
+        match s {
+            "solar" => ThemeFamily::Solar,
+            _ => ThemeFamily::Cyberpunk,
+        }
+    }
+
+    /// Resolve to the CSS `data-theme` attribute value.
+    pub fn resolve(&self, is_dark: bool) -> &'static str {
+        match (self, is_dark) {
+            (ThemeFamily::Cyberpunk, true) => "cyberpunk",
+            (ThemeFamily::Cyberpunk, false) => "light",
+            (ThemeFamily::Solar, true) => "solar",
+            (ThemeFamily::Solar, false) => "solar-light",
+        }
+    }
+}
+
+/// Shared theme state provided as context.
+///
+/// Both the sidebar (dark/light toggle) and settings (family picker)
+/// read and write these signals. Changes call [`set_theme`] to apply.
+#[derive(Clone, Copy)]
+pub struct ThemeState {
+    pub family: Signal<String>,
+    pub is_dark: Signal<bool>,
+}
+
+impl ThemeState {
+    /// Apply the current family + mode to the document.
+    pub fn apply(&self) {
+        let family = ThemeFamily::from_key(&self.family.read());
+        let theme = family.resolve(*self.is_dark.read());
+        set_theme(theme);
     }
 }
 
@@ -64,13 +111,28 @@ mod tests {
     use super::*;
 
     #[test]
-    fn theme_default_is_cyberpunk() {
-        assert_eq!(Theme::default(), Theme::Cyberpunk);
+    fn theme_family_default_is_cyberpunk() {
+        assert_eq!(ThemeFamily::default(), ThemeFamily::Cyberpunk);
     }
 
     #[test]
-    fn theme_as_str_values() {
-        assert_eq!(Theme::Cyberpunk.as_str(), "cyberpunk");
-        assert_eq!(Theme::Light.as_str(), "light");
+    fn theme_family_as_str_values() {
+        assert_eq!(ThemeFamily::Cyberpunk.as_str(), "cyberpunk");
+        assert_eq!(ThemeFamily::Solar.as_str(), "solar");
+    }
+
+    #[test]
+    fn theme_family_from_key() {
+        assert_eq!(ThemeFamily::from_key("cyberpunk"), ThemeFamily::Cyberpunk);
+        assert_eq!(ThemeFamily::from_key("solar"), ThemeFamily::Solar);
+        assert_eq!(ThemeFamily::from_key("unknown"), ThemeFamily::Cyberpunk);
+    }
+
+    #[test]
+    fn theme_family_resolve_variants() {
+        assert_eq!(ThemeFamily::Cyberpunk.resolve(true), "cyberpunk");
+        assert_eq!(ThemeFamily::Cyberpunk.resolve(false), "light");
+        assert_eq!(ThemeFamily::Solar.resolve(true), "solar");
+        assert_eq!(ThemeFamily::Solar.resolve(false), "solar-light");
     }
 }

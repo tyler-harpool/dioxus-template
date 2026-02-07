@@ -50,12 +50,7 @@ fn filter_products(
         .filter(|p| p.price <= price_max)
         .filter(|p| {
             date_after.is_none_or(|d| {
-                let date_str = format!(
-                    "{}-{:02}-{:02}",
-                    d.year(),
-                    d.month() as u8,
-                    d.day()
-                );
+                let date_str = format!("{}-{:02}-{:02}", d.year(), d.month() as u8, d.day());
                 p.created_at >= date_str
             })
         })
@@ -166,8 +161,7 @@ pub fn Products() -> Element {
 
     let filtered_all = filter_products(&all_products, "all", &query, &cat, pmax, dafter);
     let filtered_active = filter_products(&all_products, "active", &query, &cat, pmax, dafter);
-    let filtered_archived =
-        filter_products(&all_products, "archived", &query, &cat, pmax, dafter);
+    let filtered_archived = filter_products(&all_products, "archived", &query, &cat, pmax, dafter);
 
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./products.css") }
