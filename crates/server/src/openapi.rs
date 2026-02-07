@@ -3,15 +3,30 @@ use shared_types::{DashboardStats, Product, User};
 use utoipa::OpenApi;
 use utoipa_scalar::{Scalar, Servable};
 
+use crate::rest;
+
 /// OpenAPI documentation for the API.
 #[derive(OpenApi)]
 #[openapi(
     paths(
-        crate::api::get_user,
-        crate::api::list_users,
-        crate::api::create_user,
+        rest::list_users,
+        rest::get_user,
+        rest::create_user,
+        rest::update_user,
+        rest::delete_user,
+        rest::list_products,
+        rest::create_product,
+        rest::update_product,
+        rest::delete_product,
+        rest::get_dashboard_stats,
     ),
-    components(schemas(User, Product, DashboardStats)),
+    components(schemas(
+        User,
+        Product,
+        DashboardStats,
+        rest::UserPayload,
+        rest::ProductPayload,
+    )),
     tags(
         (name = "users", description = "User management endpoints"),
         (name = "products", description = "Product management endpoints"),
@@ -20,7 +35,10 @@ use utoipa_scalar::{Scalar, Servable};
 )]
 pub struct ApiDoc;
 
-/// Build an Axum router that serves the API docs at `/docs`.
-pub fn swagger_router() -> Router {
-    Router::new().merge(Scalar::with_url("/docs", ApiDoc::openapi()))
+/// Build an Axum router that serves the API docs at `/docs`
+/// and the REST API at `/api/*`.
+pub fn api_router() -> Router {
+    Router::new()
+        .merge(rest::rest_router())
+        .merge(Scalar::with_url("/docs", ApiDoc::openapi()))
 }

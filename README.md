@@ -7,9 +7,9 @@ A fullstack Rust application built with [Dioxus](https://dioxuslabs.com/) 0.7, P
 ```
 crates/
   app/            # Frontend application — routes, pages, entry point
-  server/         # Backend — API endpoints, database layer, OpenAPI docs
-  shared-types/   # Shared data models (User, Product, ButtonVariant)
-  shared-ui/      # Reusable UI components (Button, Card, TextInput, PageLayout)
+  server/         # Backend — Dioxus server fns, REST API, database layer, OpenAPI docs
+  shared-types/   # Shared data models (User, Product, DashboardStats)
+  shared-ui/      # 38 cyberpunk-themed UI components wrapping dioxus-primitives
 ```
 
 ## Prerequisites
@@ -70,9 +70,23 @@ make dev
 Once the dev server is running (`make dev`), open the URL shown in the terminal and navigate to:
 
 - **Interactive docs** — `/docs`
-- **OpenAPI JSON** — `/api-docs/openapi.json`
 
 For example, if the server is at `http://127.0.0.1:50222`, visit `http://127.0.0.1:50222/docs` to browse and test all API endpoints.
+
+### REST Endpoints
+
+| Method   | Path                      | Description             |
+| -------- | ------------------------- | ----------------------- |
+| `GET`    | `/api/users`              | List all users          |
+| `GET`    | `/api/users/{user_id}`    | Get user by ID          |
+| `POST`   | `/api/users`              | Create a user           |
+| `PUT`    | `/api/users/{user_id}`    | Update a user           |
+| `DELETE` | `/api/users/{user_id}`    | Delete a user           |
+| `GET`    | `/api/products`           | List all products       |
+| `POST`   | `/api/products`           | Create a product        |
+| `PUT`    | `/api/products/{id}`      | Update a product        |
+| `DELETE` | `/api/products/{id}`      | Delete a product        |
+| `GET`    | `/api/dashboard/stats`    | Dashboard statistics    |
 
 ## Offline Builds
 

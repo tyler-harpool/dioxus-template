@@ -5,7 +5,9 @@ pub use prim::CheckboxState;
 
 #[component]
 pub fn Checkbox(mut props: prim::CheckboxProps) -> Element {
-    props.attributes.push(Attribute::new("class", "checkbox", None, false));
+    props
+        .attributes
+        .push(Attribute::new("class", "checkbox", None, false));
 
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./style.css") }

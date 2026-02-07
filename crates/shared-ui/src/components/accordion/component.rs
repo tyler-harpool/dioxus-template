@@ -3,7 +3,9 @@ use dioxus_primitives::accordion as prim;
 
 #[component]
 pub fn Accordion(mut props: prim::AccordionProps) -> Element {
-    props.attributes.push(Attribute::new("class", "accordion", None, false));
+    props
+        .attributes
+        .push(Attribute::new("class", "accordion", None, false));
 
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./style.css") }
@@ -13,7 +15,9 @@ pub fn Accordion(mut props: prim::AccordionProps) -> Element {
 
 #[component]
 pub fn AccordionItem(mut props: prim::AccordionItemProps) -> Element {
-    props.attributes.push(Attribute::new("class", "accordion-item", None, false));
+    props
+        .attributes
+        .push(Attribute::new("class", "accordion-item", None, false));
 
     rsx! {
         prim::AccordionItem { ..props }
@@ -22,7 +26,9 @@ pub fn AccordionItem(mut props: prim::AccordionItemProps) -> Element {
 
 #[component]
 pub fn AccordionTrigger(mut props: prim::AccordionTriggerProps) -> Element {
-    props.attributes.push(Attribute::new("class", "accordion-trigger", None, false));
+    props
+        .attributes
+        .push(Attribute::new("class", "accordion-trigger", None, false));
 
     // Inject the chevron SVG as part of children by wrapping
     let original_children = props.children;
@@ -50,7 +56,9 @@ pub fn AccordionTrigger(mut props: prim::AccordionTriggerProps) -> Element {
 
 #[component]
 pub fn AccordionContent(mut props: prim::AccordionContentProps) -> Element {
-    props.attributes.push(Attribute::new("class", "accordion-content", None, false));
+    props
+        .attributes
+        .push(Attribute::new("class", "accordion-content", None, false));
 
     rsx! {
         prim::AccordionContent { ..props }

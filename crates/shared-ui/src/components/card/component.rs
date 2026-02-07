@@ -3,13 +3,10 @@ use dioxus::prelude::*;
 /// A cyberpunk-styled card container.
 #[component]
 pub fn Card(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "card", None, false),
-    ];
+    let base = vec![Attribute::new("class", "card", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -24,13 +21,10 @@ pub fn Card(
 /// Header section of a Card.
 #[component]
 pub fn CardHeader(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "card-header", None, false),
-    ];
+    let base = vec![Attribute::new("class", "card-header", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -44,13 +38,10 @@ pub fn CardHeader(
 /// Title element within a CardHeader.
 #[component]
 pub fn CardTitle(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "card-title", None, false),
-    ];
+    let base = vec![Attribute::new("class", "card-title", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -64,13 +55,10 @@ pub fn CardTitle(
 /// Description text within a CardHeader.
 #[component]
 pub fn CardDescription(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "card-description", None, false),
-    ];
+    let base = vec![Attribute::new("class", "card-description", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -84,13 +72,10 @@ pub fn CardDescription(
 /// Action area within a CardHeader, typically for buttons or icons.
 #[component]
 pub fn CardAction(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "card-action", None, false),
-    ];
+    let base = vec![Attribute::new("class", "card-action", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -104,13 +89,10 @@ pub fn CardAction(
 /// Main content section of a Card.
 #[component]
 pub fn CardContent(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "card-content", None, false),
-    ];
+    let base = vec![Attribute::new("class", "card-content", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -124,13 +106,10 @@ pub fn CardContent(
 /// Footer section of a Card.
 #[component]
 pub fn CardFooter(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "card-footer", None, false),
-    ];
+    let base = vec![Attribute::new("class", "card-footer", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {

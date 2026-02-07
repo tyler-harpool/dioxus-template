@@ -3,7 +3,9 @@ use dioxus_primitives::popover as prim;
 
 #[component]
 pub fn PopoverRoot(mut props: prim::PopoverRootProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-popover", None, false));
+    props
+        .attributes
+        .push(Attribute::new("class", "cyber-popover", None, false));
 
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./style.css") }
@@ -13,7 +15,12 @@ pub fn PopoverRoot(mut props: prim::PopoverRootProps) -> Element {
 
 #[component]
 pub fn PopoverTrigger(mut props: prim::PopoverTriggerProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-popover-trigger", None, false));
+    props.attributes.push(Attribute::new(
+        "class",
+        "cyber-popover-trigger",
+        None,
+        false,
+    ));
 
     rsx! {
         prim::PopoverTrigger { ..props }

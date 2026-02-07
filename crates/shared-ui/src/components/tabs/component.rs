@@ -3,7 +3,9 @@ use dioxus_primitives::tabs as prim;
 
 #[component]
 pub fn Tabs(mut props: prim::TabsProps) -> Element {
-    props.attributes.push(Attribute::new("class", "tabs", None, false));
+    props
+        .attributes
+        .push(Attribute::new("class", "tabs", None, false));
 
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./style.css") }
@@ -13,7 +15,9 @@ pub fn Tabs(mut props: prim::TabsProps) -> Element {
 
 #[component]
 pub fn TabList(mut props: prim::TabListProps) -> Element {
-    props.attributes.push(Attribute::new("class", "tab-list", None, false));
+    props
+        .attributes
+        .push(Attribute::new("class", "tab-list", None, false));
 
     rsx! {
         prim::TabList { ..props }

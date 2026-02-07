@@ -2,12 +2,12 @@ use dioxus::prelude::*;
 use server::api::{create_user, delete_user, list_users, update_user};
 use shared_types::User;
 use shared_ui::{
-    AlertDialogAction, AlertDialogActions, AlertDialogCancel, AlertDialogContent,
+    use_toast, AlertDialogAction, AlertDialogActions, AlertDialogCancel, AlertDialogContent,
     AlertDialogDescription, AlertDialogRoot, AlertDialogTitle, Avatar, AvatarFallback, Badge,
     BadgeVariant, Button, ButtonVariant, Checkbox, CheckboxIndicator, CheckboxState, ContextMenu,
     ContextMenuContent, ContextMenuItem, ContextMenuTrigger, DialogContent, DialogDescription,
     DialogRoot, DialogTitle, Form, Input, Label, PopoverContent, PopoverRoot, PopoverTrigger,
-    ScrollArea, Separator, ToastOptions, Toolbar, ToolbarButton, ToolbarSeparator, use_toast,
+    ScrollArea, Separator, ToastOptions, Toolbar, ToolbarButton, ToolbarSeparator,
 };
 
 /// Extract the first two characters of a name as uppercase initials.

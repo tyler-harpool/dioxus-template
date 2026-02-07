@@ -2,14 +2,13 @@ use dioxus::prelude::*;
 use server::api::{create_product, delete_product, list_products, update_product};
 use shared_types::Product;
 use shared_ui::{
-    Badge, BadgeVariant, Button, ButtonVariant, Card, CardContent, CardHeader, CardTitle,
-    Collapsible, CollapsibleContent, CollapsibleTrigger, DatePicker, DatePickerCalendar,
+    use_toast, Badge, BadgeVariant, Button, ButtonVariant, Card, CardContent, CardHeader,
+    CardTitle, Collapsible, CollapsibleContent, CollapsibleTrigger, DatePicker, DatePickerCalendar,
     DatePickerInput, DatePickerPopover, Form, Input, Label, RadioGroup, RadioGroupItem,
     SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValue, Separator, Sheet,
     SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetSide, SheetTitle,
     Skeleton, SliderRange, SliderRoot, SliderThumb, SliderTrack, SliderValue, TabContent, TabList,
     TabTrigger, Tabs, Textarea, TextareaVariant, ToastOptions, ToggleGroup, ToggleGroupItem,
-    use_toast,
 };
 
 /// Maximum price bound used by the slider filter.
@@ -29,7 +28,12 @@ fn badge_variant_for_status(status: &str) -> BadgeVariant {
 }
 
 /// Filters a product list by status tab, category, and maximum price.
-fn filter_products(products: &[Product], tab: &str, category: &str, price_max: f64) -> Vec<Product> {
+fn filter_products(
+    products: &[Product],
+    tab: &str,
+    category: &str,
+    price_max: f64,
+) -> Vec<Product> {
     products
         .iter()
         .filter(|p| tab == "all" || p.status == tab)
@@ -79,7 +83,15 @@ pub fn Products() -> Element {
             let parsed_price: f64 = price_str.parse().unwrap_or(0.0);
 
             let result = if let Some(existing) = editing {
-                update_product(existing.id, name, description, parsed_price, category, status).await
+                update_product(
+                    existing.id,
+                    name,
+                    description,
+                    parsed_price,
+                    category,
+                    status,
+                )
+                .await
             } else {
                 create_product(name, description, parsed_price, category, status).await
             };
@@ -88,7 +100,10 @@ pub fn Products() -> Element {
                 Ok(_) => {
                     products.restart();
                     show_sheet.set(false);
-                    toast.success("Product saved successfully".to_string(), ToastOptions::new());
+                    toast.success(
+                        "Product saved successfully".to_string(),
+                        ToastOptions::new(),
+                    );
                 }
                 Err(err) => {
                     toast.error(format!("Error saving product: {err}"), ToastOptions::new());
@@ -106,7 +121,10 @@ pub fn Products() -> Element {
                     toast.success("Product deleted".to_string(), ToastOptions::new());
                 }
                 Err(err) => {
-                    toast.error(format!("Error deleting product: {err}"), ToastOptions::new());
+                    toast.error(
+                        format!("Error deleting product: {err}"),
+                        ToastOptions::new(),
+                    );
                 }
             }
         });
@@ -378,9 +396,21 @@ pub fn Products() -> Element {
                                     on_value_change: move |val: String| form_status.set(val),
                                     div {
                                         style: "display: flex; gap: var(--space-md);",
-                                        RadioGroupItem { value: "active", index: 0usize, "Active" }
-                                        RadioGroupItem { value: "draft", index: 1usize, "Draft" }
-                                        RadioGroupItem { value: "archived", index: 2usize, "Archived" }
+                                        label {
+                                            style: "display: flex; align-items: center; gap: var(--space-xs); cursor: pointer; color: var(--color-on-surface);",
+                                            RadioGroupItem { value: "active", index: 0usize }
+                                            "Active"
+                                        }
+                                        label {
+                                            style: "display: flex; align-items: center; gap: var(--space-xs); cursor: pointer; color: var(--color-on-surface);",
+                                            RadioGroupItem { value: "draft", index: 1usize }
+                                            "Draft"
+                                        }
+                                        label {
+                                            style: "display: flex; align-items: center; gap: var(--space-xs); cursor: pointer; color: var(--color-on-surface);",
+                                            RadioGroupItem { value: "archived", index: 2usize }
+                                            "Archived"
+                                        }
                                     }
                                 }
                             }

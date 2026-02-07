@@ -3,7 +3,12 @@ use dioxus_primitives::alert_dialog as prim;
 
 #[component]
 pub fn AlertDialogRoot(mut props: prim::AlertDialogRootProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-alert-dialog-overlay", None, false));
+    props.attributes.push(Attribute::new(
+        "class",
+        "cyber-alert-dialog-overlay",
+        None,
+        false,
+    ));
 
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./style.css") }
@@ -24,7 +29,12 @@ pub fn AlertDialogContent(mut props: prim::AlertDialogContentProps) -> Element {
 
 #[component]
 pub fn AlertDialogTitle(mut props: prim::AlertDialogTitleProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-alert-dialog-title", None, false));
+    props.attributes.push(Attribute::new(
+        "class",
+        "cyber-alert-dialog-title",
+        None,
+        false,
+    ));
 
     rsx! {
         prim::AlertDialogTitle { ..props }
@@ -33,7 +43,12 @@ pub fn AlertDialogTitle(mut props: prim::AlertDialogTitleProps) -> Element {
 
 #[component]
 pub fn AlertDialogDescription(mut props: prim::AlertDialogDescriptionProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-alert-dialog-description", None, false));
+    props.attributes.push(Attribute::new(
+        "class",
+        "cyber-alert-dialog-description",
+        None,
+        false,
+    ));
 
     rsx! {
         prim::AlertDialogDescription { ..props }
@@ -42,7 +57,12 @@ pub fn AlertDialogDescription(mut props: prim::AlertDialogDescriptionProps) -> E
 
 #[component]
 pub fn AlertDialogActions(mut props: prim::AlertDialogActionsProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-alert-dialog-actions", None, false));
+    props.attributes.push(Attribute::new(
+        "class",
+        "cyber-alert-dialog-actions",
+        None,
+        false,
+    ));
 
     rsx! {
         prim::AlertDialogActions { ..props }
@@ -51,7 +71,12 @@ pub fn AlertDialogActions(mut props: prim::AlertDialogActionsProps) -> Element {
 
 #[component]
 pub fn AlertDialogAction(mut props: prim::AlertDialogActionProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-alert-dialog-action", None, false));
+    props.attributes.push(Attribute::new(
+        "class",
+        "cyber-alert-dialog-action",
+        None,
+        false,
+    ));
 
     rsx! {
         prim::AlertDialogAction { ..props }
@@ -60,7 +85,12 @@ pub fn AlertDialogAction(mut props: prim::AlertDialogActionProps) -> Element {
 
 #[component]
 pub fn AlertDialogCancel(mut props: prim::AlertDialogCancelProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-alert-dialog-cancel", None, false));
+    props.attributes.push(Attribute::new(
+        "class",
+        "cyber-alert-dialog-cancel",
+        None,
+        false,
+    ));
 
     rsx! {
         prim::AlertDialogCancel { ..props }

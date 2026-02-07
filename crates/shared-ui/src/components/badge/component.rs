@@ -25,8 +25,7 @@ impl BadgeVariant {
 #[component]
 pub fn Badge(
     #[props(default)] variant: BadgeVariant,
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
     let base = vec![

@@ -3,7 +3,9 @@ use dioxus_primitives::context_menu as prim;
 
 #[component]
 pub fn ContextMenu(mut props: prim::ContextMenuProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-context-menu", None, false));
+    props
+        .attributes
+        .push(Attribute::new("class", "cyber-context-menu", None, false));
 
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./style.css") }
@@ -13,7 +15,12 @@ pub fn ContextMenu(mut props: prim::ContextMenuProps) -> Element {
 
 #[component]
 pub fn ContextMenuTrigger(mut props: prim::ContextMenuTriggerProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-context-menu-trigger", None, false));
+    props.attributes.push(Attribute::new(
+        "class",
+        "cyber-context-menu-trigger",
+        None,
+        false,
+    ));
 
     rsx! {
         prim::ContextMenuTrigger { ..props }
@@ -22,7 +29,12 @@ pub fn ContextMenuTrigger(mut props: prim::ContextMenuTriggerProps) -> Element {
 
 #[component]
 pub fn ContextMenuContent(mut props: prim::ContextMenuContentProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-context-menu-content", None, false));
+    props.attributes.push(Attribute::new(
+        "class",
+        "cyber-context-menu-content",
+        None,
+        false,
+    ));
 
     rsx! {
         prim::ContextMenuContent { ..props }
@@ -31,7 +43,12 @@ pub fn ContextMenuContent(mut props: prim::ContextMenuContentProps) -> Element {
 
 #[component]
 pub fn ContextMenuItem(mut props: prim::ContextMenuItemProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-context-menu-item", None, false));
+    props.attributes.push(Attribute::new(
+        "class",
+        "cyber-context-menu-item",
+        None,
+        false,
+    ));
 
     rsx! {
         prim::ContextMenuItem { ..props }

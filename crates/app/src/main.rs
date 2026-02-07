@@ -8,7 +8,7 @@ const CYBERPUNK_THEME: Asset = asset!("/assets/cyberpunk-theme.css");
 fn main() {
     #[cfg(feature = "server")]
     dioxus::serve(|| async move {
-        let router = dioxus::server::router(App).merge(server::openapi::swagger_router());
+        let router = dioxus::server::router(App).merge(server::openapi::api_router());
         Ok(router)
     });
 

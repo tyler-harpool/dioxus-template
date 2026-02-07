@@ -3,7 +3,9 @@ use dioxus_primitives::dialog as prim;
 
 #[component]
 pub fn DialogRoot(mut props: prim::DialogRootProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-dialog-overlay", None, false));
+    props
+        .attributes
+        .push(Attribute::new("class", "cyber-dialog-overlay", None, false));
 
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./style.css") }
@@ -24,7 +26,9 @@ pub fn DialogContent(mut props: prim::DialogContentProps) -> Element {
 
 #[component]
 pub fn DialogTitle(mut props: prim::DialogTitleProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-dialog-title", None, false));
+    props
+        .attributes
+        .push(Attribute::new("class", "cyber-dialog-title", None, false));
 
     rsx! {
         prim::DialogTitle { ..props }
@@ -33,7 +37,12 @@ pub fn DialogTitle(mut props: prim::DialogTitleProps) -> Element {
 
 #[component]
 pub fn DialogDescription(mut props: prim::DialogDescriptionProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-dialog-description", None, false));
+    props.attributes.push(Attribute::new(
+        "class",
+        "cyber-dialog-description",
+        None,
+        false,
+    ));
 
     rsx! {
         prim::DialogDescription { ..props }

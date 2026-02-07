@@ -2,9 +2,7 @@ use dioxus::prelude::*;
 use dioxus_primitives::calendar::CalendarProps;
 use dioxus_primitives::date_picker as prim;
 
-pub use dioxus_primitives::date_picker::{
-    DateRangePickerContext, DefaultCalendarProps,
-};
+pub use dioxus_primitives::date_picker::{DateRangePickerContext, DefaultCalendarProps};
 
 #[component]
 pub fn DatePicker(mut props: prim::DatePickerProps) -> Element {

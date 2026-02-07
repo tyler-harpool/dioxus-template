@@ -10,10 +10,7 @@ pub struct SidebarState {
 
 /// Provides sidebar state context to children.
 #[component]
-pub fn SidebarProvider(
-    #[props(default = true)] default_open: bool,
-    children: Element,
-) -> Element {
+pub fn SidebarProvider(#[props(default = true)] default_open: bool, children: Element) -> Element {
     let state = use_signal(|| SidebarState { open: default_open });
     use_context_provider(|| state);
 
@@ -37,8 +34,7 @@ fn use_sidebar() -> Signal<SidebarState> {
 /// The main sidebar container. Collapses based on context state.
 #[component]
 pub fn Sidebar(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
     let state = use_sidebar();
@@ -65,13 +61,10 @@ pub fn Sidebar(
 /// Header section inside the Sidebar.
 #[component]
 pub fn SidebarHeader(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sidebar-header", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sidebar-header", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -85,13 +78,10 @@ pub fn SidebarHeader(
 /// Scrollable content area of the Sidebar.
 #[component]
 pub fn SidebarContent(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sidebar-content", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sidebar-content", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -105,13 +95,10 @@ pub fn SidebarContent(
 /// Footer section inside the Sidebar.
 #[component]
 pub fn SidebarFooter(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sidebar-footer", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sidebar-footer", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -127,13 +114,10 @@ pub fn SidebarFooter(
 /// A group of related sidebar items.
 #[component]
 pub fn SidebarGroup(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sidebar-group", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sidebar-group", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -147,13 +131,10 @@ pub fn SidebarGroup(
 /// Label for a SidebarGroup.
 #[component]
 pub fn SidebarGroupLabel(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sidebar-group-label", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sidebar-group-label", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -167,13 +148,15 @@ pub fn SidebarGroupLabel(
 /// Content container within a SidebarGroup.
 #[component]
 pub fn SidebarGroupContent(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sidebar-group-content", None, false),
-    ];
+    let base = vec![Attribute::new(
+        "class",
+        "sidebar-group-content",
+        None,
+        false,
+    )];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -189,13 +172,10 @@ pub fn SidebarGroupContent(
 /// Navigation menu list inside the sidebar.
 #[component]
 pub fn SidebarMenu(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sidebar-menu", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sidebar-menu", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -209,13 +189,10 @@ pub fn SidebarMenu(
 /// A single item in a SidebarMenu.
 #[component]
 pub fn SidebarMenuItem(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sidebar-menu-item", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sidebar-menu-item", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -230,8 +207,7 @@ pub fn SidebarMenuItem(
 #[component]
 pub fn SidebarMenuButton(
     #[props(default = false)] active: bool,
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
     let base = vec![
@@ -256,13 +232,10 @@ pub fn SidebarMenuButton(
 /// Sub-menu container for nested navigation.
 #[component]
 pub fn SidebarMenuSub(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sidebar-menu-sub", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sidebar-menu-sub", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -276,13 +249,15 @@ pub fn SidebarMenuSub(
 /// Item within a SidebarMenuSub.
 #[component]
 pub fn SidebarMenuSubItem(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sidebar-menu-sub-item", None, false),
-    ];
+    let base = vec![Attribute::new(
+        "class",
+        "sidebar-menu-sub-item",
+        None,
+        false,
+    )];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -297,8 +272,7 @@ pub fn SidebarMenuSubItem(
 #[component]
 pub fn SidebarMenuSubButton(
     #[props(default = false)] active: bool,
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
     let base = vec![
@@ -325,15 +299,12 @@ pub fn SidebarMenuSubButton(
 /// Toggle button that opens/closes the sidebar.
 #[component]
 pub fn SidebarTrigger(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
     let mut state = use_sidebar();
 
-    let base = vec![
-        Attribute::new("class", "sidebar-trigger", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sidebar-trigger", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -353,12 +324,9 @@ pub fn SidebarTrigger(
 /// Visual separator line inside the sidebar.
 #[component]
 pub fn SidebarSeparator(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sidebar-separator", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sidebar-separator", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -372,13 +340,10 @@ pub fn SidebarSeparator(
 /// based on sidebar open/closed state.
 #[component]
 pub fn SidebarInset(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sidebar-inset", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sidebar-inset", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {

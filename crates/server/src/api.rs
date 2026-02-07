@@ -5,21 +5,6 @@ use shared_types::{DashboardStats, Product, User};
 use crate::db::get_db;
 
 /// Get a user by ID.
-#[cfg_attr(
-    feature = "server",
-    utoipa::path(
-        get,
-        path = "/api/users/{user_id}",
-        params(
-            ("user_id" = i64, Path, description = "User ID")
-        ),
-        responses(
-            (status = 200, description = "User found", body = User),
-            (status = 404, description = "User not found")
-        ),
-        tag = "users"
-    )
-)]
 #[server]
 pub async fn get_user(user_id: i64) -> Result<User, ServerFnError> {
     let db = get_db().await;
@@ -35,17 +20,6 @@ pub async fn get_user(user_id: i64) -> Result<User, ServerFnError> {
 }
 
 /// List all users.
-#[cfg_attr(
-    feature = "server",
-    utoipa::path(
-        get,
-        path = "/api/users",
-        responses(
-            (status = 200, description = "List of users", body = Vec<User>)
-        ),
-        tag = "users"
-    )
-)]
 #[server]
 pub async fn list_users() -> Result<Vec<User>, ServerFnError> {
     let db = get_db().await;
@@ -57,17 +31,6 @@ pub async fn list_users() -> Result<Vec<User>, ServerFnError> {
 }
 
 /// Create a new user.
-#[cfg_attr(
-    feature = "server",
-    utoipa::path(
-        post,
-        path = "/api/users",
-        responses(
-            (status = 201, description = "User created", body = User)
-        ),
-        tag = "users"
-    )
-)]
 #[server]
 pub async fn create_user(username: String, display_name: String) -> Result<User, ServerFnError> {
     let db = get_db().await;
@@ -238,12 +201,11 @@ pub async fn get_dashboard_stats() -> Result<DashboardStats, ServerFnError> {
         .map_err(|e| ServerFnError::new(e.to_string()))?
         .unwrap_or(0);
 
-    let active_count =
-        sqlx::query_scalar!("SELECT COUNT(*) FROM products WHERE status = 'active'")
-            .fetch_one(db)
-            .await
-            .map_err(|e| ServerFnError::new(e.to_string()))?
-            .unwrap_or(0);
+    let active_count = sqlx::query_scalar!("SELECT COUNT(*) FROM products WHERE status = 'active'")
+        .fetch_one(db)
+        .await
+        .map_err(|e| ServerFnError::new(e.to_string()))?
+        .unwrap_or(0);
 
     let recent_users = sqlx::query_as!(
         User,

@@ -15,12 +15,9 @@ pub fn SelectRoot<T: Clone + PartialEq + 'static>(mut props: prim::SelectProps<T
 
 #[component]
 pub fn SelectTrigger(mut props: prim::SelectTriggerProps) -> Element {
-    props.attributes.push(Attribute::new(
-        "class",
-        "cyber-select-trigger",
-        None,
-        false,
-    ));
+    props
+        .attributes
+        .push(Attribute::new("class", "cyber-select-trigger", None, false));
 
     rsx! {
         prim::SelectTrigger { ..props }
@@ -40,12 +37,9 @@ pub fn SelectValue(mut props: prim::SelectValueProps) -> Element {
 
 #[component]
 pub fn SelectContent(mut props: prim::SelectListProps) -> Element {
-    props.attributes.push(Attribute::new(
-        "class",
-        "cyber-select-content",
-        None,
-        false,
-    ));
+    props
+        .attributes
+        .push(Attribute::new("class", "cyber-select-content", None, false));
 
     rsx! {
         prim::SelectList { ..props }
@@ -53,7 +47,9 @@ pub fn SelectContent(mut props: prim::SelectListProps) -> Element {
 }
 
 #[component]
-pub fn SelectItem<T: Clone + PartialEq + 'static>(mut props: prim::SelectOptionProps<T>) -> Element {
+pub fn SelectItem<T: Clone + PartialEq + 'static>(
+    mut props: prim::SelectOptionProps<T>,
+) -> Element {
     props
         .attributes
         .push(Attribute::new("class", "cyber-select-item", None, false));

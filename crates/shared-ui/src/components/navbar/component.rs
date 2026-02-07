@@ -26,12 +26,9 @@ pub fn NavbarNav(mut props: prim::NavbarNavProps) -> Element {
 
 #[component]
 pub fn NavbarTrigger(mut props: prim::NavbarTriggerProps) -> Element {
-    props.attributes.push(Attribute::new(
-        "class",
-        "cyber-navbar-trigger",
-        None,
-        false,
-    ));
+    props
+        .attributes
+        .push(Attribute::new("class", "cyber-navbar-trigger", None, false));
 
     rsx! {
         prim::NavbarTrigger { ..props }
@@ -40,12 +37,9 @@ pub fn NavbarTrigger(mut props: prim::NavbarTriggerProps) -> Element {
 
 #[component]
 pub fn NavbarContent(mut props: prim::NavbarContentProps) -> Element {
-    props.attributes.push(Attribute::new(
-        "class",
-        "cyber-navbar-content",
-        None,
-        false,
-    ));
+    props
+        .attributes
+        .push(Attribute::new("class", "cyber-navbar-content", None, false));
 
     rsx! {
         prim::NavbarContent { ..props }

@@ -3,8 +3,8 @@ use server::api::get_dashboard_stats;
 use shared_ui::{
     AspectRatio, Avatar, AvatarFallback, Badge, BadgeVariant, Button, ButtonVariant, Card,
     CardContent, CardDescription, CardHeader, CardTitle, HoverCard, HoverCardContent,
-    HoverCardTrigger, Progress, ProgressIndicator, ScrollArea, Separator, Skeleton, Tooltip,
-    TooltipContent, TooltipTrigger,
+    HoverCardTrigger, Progress, ProgressIndicator, Separator, Skeleton, Tooltip, TooltipContent,
+    TooltipTrigger,
 };
 
 /// Maximum value for progress bar display.
@@ -245,20 +245,17 @@ fn RecentActivity(stats: shared_types::DashboardStats) -> Element {
                 CardDescription { "Newly registered users." }
             }
             CardContent {
-                ScrollArea {
-                    div {
-                        style: "max-height: 20rem;",
-                        for (idx, user) in stats.recent_users.iter().enumerate() {
-                            if idx > 0 {
-                                Separator {}
-                            }
-                            UserRow { user: user.clone() }
+                div {
+                    for (idx, user) in stats.recent_users.iter().enumerate() {
+                        if idx > 0 {
+                            Separator {}
                         }
-                        if stats.recent_users.is_empty() {
-                            p {
-                                style: "color: var(--color-on-surface-muted); text-align: center; padding: var(--space-lg);",
-                                "No recent users."
-                            }
+                        UserRow { user: user.clone() }
+                    }
+                    if stats.recent_users.is_empty() {
+                        p {
+                            style: "color: var(--color-on-surface-muted); text-align: center; padding: var(--space-lg);",
+                            "No recent users."
                         }
                     }
                 }

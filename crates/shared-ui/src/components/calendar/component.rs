@@ -1,9 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_primitives::calendar as prim;
 
-pub use dioxus_primitives::calendar::{
-    CalendarContext, DateRange, RangeCalendarContext,
-};
+pub use dioxus_primitives::calendar::{CalendarContext, DateRange, RangeCalendarContext};
 
 #[component]
 pub fn Calendar(mut props: prim::CalendarProps) -> Element {
@@ -57,9 +55,7 @@ pub fn CalendarNavigation(mut props: prim::CalendarNavigationProps) -> Element {
 }
 
 #[component]
-pub fn CalendarPreviousMonthButton(
-    mut props: prim::CalendarPreviousMonthButtonProps,
-) -> Element {
+pub fn CalendarPreviousMonthButton(mut props: prim::CalendarPreviousMonthButtonProps) -> Element {
     props.attributes.push(Attribute::new(
         "class",
         "cyber-calendar-nav-btn",

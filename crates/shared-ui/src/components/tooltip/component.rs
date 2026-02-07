@@ -5,7 +5,9 @@ pub use dioxus_primitives::{ContentAlign, ContentSide};
 
 #[component]
 pub fn Tooltip(mut props: prim::TooltipProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-tooltip", None, false));
+    props
+        .attributes
+        .push(Attribute::new("class", "cyber-tooltip", None, false));
 
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./style.css") }
@@ -15,7 +17,12 @@ pub fn Tooltip(mut props: prim::TooltipProps) -> Element {
 
 #[component]
 pub fn TooltipTrigger(mut props: prim::TooltipTriggerProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-tooltip-trigger", None, false));
+    props.attributes.push(Attribute::new(
+        "class",
+        "cyber-tooltip-trigger",
+        None,
+        false,
+    ));
 
     rsx! {
         prim::TooltipTrigger { ..props }
@@ -24,7 +31,12 @@ pub fn TooltipTrigger(mut props: prim::TooltipTriggerProps) -> Element {
 
 #[component]
 pub fn TooltipContent(mut props: prim::TooltipContentProps) -> Element {
-    props.attributes.push(Attribute::new("class", "cyber-tooltip-content", None, false));
+    props.attributes.push(Attribute::new(
+        "class",
+        "cyber-tooltip-content",
+        None,
+        false,
+    ));
 
     rsx! {
         prim::TooltipContent { ..props }

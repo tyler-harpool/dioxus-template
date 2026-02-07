@@ -1,11 +1,11 @@
 use dioxus::prelude::*;
 use shared_ui::{
     Accordion, AccordionContent, AccordionItem, AccordionTrigger, Button, ButtonVariant, Calendar,
-    CalendarGrid, CalendarHeader, CalendarMonthTitle, CalendarNavigation,
-    CalendarNextMonthButton, CalendarPreviousMonthButton, CalendarSelectMonth, CalendarSelectYear,
-    Card, CardContent, CardHeader, CardTitle, Collapsible, CollapsibleContent, CollapsibleTrigger,
-    Form, Input, Label, MenubarContent, MenubarItem, MenubarMenu, MenubarRoot, MenubarSeparator,
-    MenubarTrigger, RadioGroup, RadioGroupItem, Separator, Switch, SwitchThumb, Toggle,
+    CalendarGrid, CalendarHeader, CalendarMonthTitle, CalendarNavigation, CalendarNextMonthButton,
+    CalendarPreviousMonthButton, CalendarSelectMonth, CalendarSelectYear, Card, CardContent,
+    CardHeader, CardTitle, Collapsible, CollapsibleContent, CollapsibleTrigger, Form, Input, Label,
+    MenubarContent, MenubarItem, MenubarMenu, MenubarRoot, MenubarSeparator, MenubarTrigger,
+    RadioGroup, RadioGroupItem, Separator, Switch, SwitchThumb, Toggle,
 };
 
 /// Settings page with menubar navigation, accordion sections, and advanced collapsible.

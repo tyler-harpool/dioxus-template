@@ -54,6 +54,10 @@
 :root,
 [data-theme="cyberpunk"],
 [data-theme="dark"] {
+    /* Primitives compatibility - dark mode toggle */
+    --dark: initial;
+    --light: ;
+
     /* Primary palette - deep blue-black backgrounds */
     --primary-color-1: #050510;
     --primary-color-2: #0a0a14;
@@ -113,6 +117,10 @@
    CYBERPUNK LIGHT
    ============================================ */
 [data-theme="light"] {
+    /* Primitives compatibility - light mode toggle */
+    --dark: ;
+    --light: initial;
+
     --primary-color-1: #ffffff;
     --primary-color-2: #f0f0fa;
     --primary-color-3: #e8e8f5;
@@ -184,6 +192,14 @@ body {
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+select,
+textarea {
+    color: inherit;
+    font: inherit;
 }
 
 a {

@@ -4,13 +4,10 @@ use dioxus::prelude::*;
 #[component]
 pub fn Form(
     #[props(default)] onsubmit: EventHandler<FormEvent>,
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "form", None, false),
-    ];
+    let base = vec![Attribute::new("class", "form", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {

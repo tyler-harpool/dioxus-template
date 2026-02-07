@@ -3,7 +3,9 @@ use dioxus_primitives::radio_group as prim;
 
 #[component]
 pub fn RadioGroup(mut props: prim::RadioGroupProps) -> Element {
-    props.attributes.push(Attribute::new("class", "radio-group", None, false));
+    props
+        .attributes
+        .push(Attribute::new("class", "radio-group", None, false));
 
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./style.css") }

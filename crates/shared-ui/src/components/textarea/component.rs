@@ -30,8 +30,7 @@ pub fn Textarea(
     #[props(default)] placeholder: String,
     #[props(default)] label: String,
     #[props(default = false)] disabled: bool,
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
 ) -> Element {
     let base = vec![
         Attribute::new("class", "textarea", None, false),

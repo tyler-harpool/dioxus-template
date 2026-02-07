@@ -52,13 +52,10 @@ pub fn Sheet(
 /// Content area inside a Sheet.
 #[component]
 pub fn SheetContent(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sheet-content", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sheet-content", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -72,13 +69,10 @@ pub fn SheetContent(
 /// Header section of a Sheet.
 #[component]
 pub fn SheetHeader(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sheet-header", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sheet-header", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -92,13 +86,10 @@ pub fn SheetHeader(
 /// Footer section of a Sheet.
 #[component]
 pub fn SheetFooter(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sheet-footer", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sheet-footer", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -112,13 +103,10 @@ pub fn SheetFooter(
 /// Title element within a SheetHeader.
 #[component]
 pub fn SheetTitle(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sheet-title", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sheet-title", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -132,13 +120,10 @@ pub fn SheetTitle(
 /// Description text within a SheetHeader.
 #[component]
 pub fn SheetDescription(
-    #[props(extends = GlobalAttributes)]
-    attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let base = vec![
-        Attribute::new("class", "sheet-description", None, false),
-    ];
+    let base = vec![Attribute::new("class", "sheet-description", None, false)];
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
@@ -151,9 +136,7 @@ pub fn SheetDescription(
 
 /// Close button for a Sheet.
 #[component]
-pub fn SheetClose(
-    on_close: EventHandler<()>,
-) -> Element {
+pub fn SheetClose(on_close: EventHandler<()>) -> Element {
     rsx! {
         button {
             class: "sheet-close",
