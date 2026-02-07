@@ -1,7 +1,7 @@
 use axum::Router;
 use shared_types::User;
 use utoipa::OpenApi;
-use utoipa_swagger_ui::SwaggerUi;
+use utoipa_scalar::{Scalar, Servable};
 
 /// OpenAPI documentation for the API.
 #[derive(OpenApi)]
@@ -18,8 +18,7 @@ use utoipa_swagger_ui::SwaggerUi;
 )]
 pub struct ApiDoc;
 
-/// Build an Axum router that serves the Swagger UI at `/swagger-ui`.
+/// Build an Axum router that serves the API docs at `/docs`.
 pub fn swagger_router() -> Router {
-    Router::new()
-        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
+    Router::new().merge(Scalar::with_url("/docs", ApiDoc::openapi()))
 }

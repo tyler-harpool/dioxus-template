@@ -6,10 +6,43 @@ use shared_ui::{Button, Card, PageLayout, TextInput};
 /// Application routes.
 #[derive(Clone, Routable, Debug, PartialEq)]
 pub enum Route {
+    #[layout(NavbarLayout)]
     #[route("/")]
     Home {},
     #[route("/users")]
     Users {},
+}
+
+/// Layout that wraps all routes with a navigation bar.
+#[component]
+fn NavbarLayout() -> Element {
+    rsx! {
+        nav {
+            style: "display: flex; align-items: center; justify-content: space-between; padding: var(--space-sm) var(--space-xl); background: var(--color-surface); border-bottom: 1px solid var(--color-border);",
+            Link { to: Route::Home {},
+                span {
+                    style: "font-size: var(--font-size-lg); font-weight: 600; color: var(--color-on-surface);",
+                    "Dioxus App"
+                }
+            }
+            div {
+                style: "display: flex; gap: var(--space-lg); align-items: center;",
+                Link { to: Route::Home {},
+                    span { style: "color: var(--color-on-surface-muted);", "Home" }
+                }
+                Link { to: Route::Users {},
+                    span { style: "color: var(--color-on-surface-muted);", "Users" }
+                }
+                a {
+                    href: "/docs",
+                    target: "_blank",
+                    style: "color: var(--color-on-surface-muted);",
+                    "API Docs"
+                }
+            }
+        }
+        Outlet::<Route> {}
+    }
 }
 
 /// Home page component.

@@ -67,10 +67,12 @@ make dev
 
 ## API Documentation
 
-When the server is running, OpenAPI docs are available at:
+Once the dev server is running (`make dev`), open the URL shown in the terminal and navigate to:
 
-- **Swagger UI** — `/swagger-ui`
+- **Interactive docs** — `/docs`
 - **OpenAPI JSON** — `/api-docs/openapi.json`
+
+For example, if the server is at `http://127.0.0.1:50222`, visit `http://127.0.0.1:50222/docs` to browse and test all API endpoints.
 
 ## Offline Builds
 
