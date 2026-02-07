@@ -4,6 +4,9 @@ use tokio::sync::OnceCell;
 static DB: OnceCell<Pool<Postgres>> = OnceCell::const_new();
 
 async fn init_db() -> Pool<Postgres> {
+    // Load .env file if present (ignored in production where env vars are set directly).
+    let _ = dotenvy::dotenv();
+
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
     let pool = sqlx::postgres::PgPool::connect(&database_url)

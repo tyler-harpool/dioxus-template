@@ -15,6 +15,8 @@ reqwest = { workspace = true, optional = true }
 utoipa = { workspace = true, optional = true }
 utoipa-axum = { workspace = true, optional = true }
 utoipa-swagger-ui = { workspace = true, optional = true }
+axum = { workspace = true, optional = true }
+dotenvy = { workspace = true, optional = true }
 
 [features]
 default = []
@@ -26,5 +28,7 @@ server = [
     "dep:utoipa",
     "dep:utoipa-axum",
     "dep:utoipa-swagger-ui",
+    "dep:axum",
+    "dep:dotenvy",
     "shared-types/openapi",
 ]
