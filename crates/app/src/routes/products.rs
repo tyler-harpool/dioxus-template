@@ -469,7 +469,11 @@ fn ProductGrid(
     mut show_sheet: Signal<bool>,
 ) -> Element {
     let is_grid = view_mode == "grid";
-    let container_class = if is_grid { "product-grid" } else { "product-list" };
+    let container_class = if is_grid {
+        "product-grid"
+    } else {
+        "product-list"
+    };
 
     rsx! {
         div {

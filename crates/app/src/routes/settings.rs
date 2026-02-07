@@ -36,8 +36,8 @@ pub fn Settings() -> Element {
 
     // Event sheet state
     let mut event_sheet_open = use_signal(|| false);
-    let mut event_title = use_signal(|| String::new());
-    let mut event_notes = use_signal(|| String::new());
+    let mut event_title = use_signal(String::new);
+    let mut event_notes = use_signal(String::new);
 
     // Delete account dialog state
     let mut delete_dialog_open = use_signal(|| false);

@@ -1,21 +1,54 @@
 # Dioxus Fullstack Template
 
-A fullstack Rust application built with [Dioxus](https://dioxuslabs.com/) 0.7, PostgreSQL, and Axum.
+A fullstack Rust application built with [Dioxus](https://dioxuslabs.com/) 0.7, PostgreSQL, and Axum. Features a cyberpunk-themed UI component library, server-side rendering, and interactive API documentation.
 
 ## Project Structure
 
 ```
 crates/
-  app/            # Frontend application — routes, pages, entry point
+  app/            # Frontend — routes, pages, layout, theme assets
   server/         # Backend — Dioxus server fns, REST API, database layer, OpenAPI docs
   shared-types/   # Shared data models (User, Product, DashboardStats)
   shared-ui/      # 38 cyberpunk-themed UI components wrapping dioxus-primitives
 ```
 
+## Features
+
+- **Fullstack Rust** — shared types between frontend and backend, no serialization mismatches
+- **38 UI components** — cyberpunk-styled wrappers around [dioxus-primitives](https://github.com/DioxusLabs/components) (buttons, dialogs, forms, sidebar, calendar, toast notifications, and more)
+- **Dark / Light theme** — toggle between cyberpunk dark and light modes via the sidebar
+- **Responsive layout** — sidebar collapses to a mobile drawer on small screens
+- **OpenAPI docs** — interactive Swagger UI at `/docs` when running fullstack
+- **PostgreSQL** — async database access via sqlx with compile-time checked queries
+- **Offline builds** — `.sqlx/` cache allows building without a running database
+
+## Pages
+
+| Route        | Description                                                                     |
+| ------------ | ------------------------------------------------------------------------------- |
+| `/`          | **Dashboard** — statistics cards, product table with search/filter              |
+| `/users`     | **Users** — CRUD user management with checkboxes, context menus, avatar badges  |
+| `/products`  | **Products** — product catalog with create/edit dialogs and tab navigation      |
+| `/settings`  | **Settings** — profile form, theme toggle, notifications, calendar, danger zone |
+
+## UI Components
+
+The `shared-ui` crate provides 38 themed components:
+
+**Layout:** Sidebar, Navbar, Card, Separator, AspectRatio, ScrollArea, Sheet
+
+**Forms:** Button, Input, Textarea, Checkbox, RadioGroup, Select, Slider, Switch, Toggle, ToggleGroup, Form, Label, DatePicker
+
+**Feedback:** Dialog, AlertDialog, Toast, Tooltip, HoverCard, Popover, Progress, Skeleton, Badge
+
+**Navigation:** Tabs, Accordion, Collapsible, Toolbar, Menubar, ContextMenu, DropdownMenu
+
+**Data:** Avatar, Calendar
+
 ## Prerequisites
 
 - [Rust](https://rustup.rs/) (stable)
-- A container runtime for PostgreSQL — [OrbStack](https://orbstack.dev/) (recommended, macOS), [Docker Desktop](https://www.docker.com/), or [Rancher Desktop](https://rancherdesktop.io/)
+- A container runtime for PostgreSQL — [OrbStack](https://orbstack.dev/) (recommended on macOS), [Docker Desktop](https://www.docker.com/), or [Rancher Desktop](https://rancherdesktop.io/)
 - [Dioxus CLI](https://dioxuslabs.com/learn/0.7/getting_started/) (`cargo install dioxus-cli`)
 - [sqlx-cli](https://github.com/launchbadge/sqlx/tree/main/sqlx-cli) (`cargo install sqlx-cli --no-default-features --features postgres`)
 
@@ -47,6 +80,8 @@ Then start the dev server:
 make dev
 ```
 
+The app will be available at the URL printed in the terminal (typically `http://127.0.0.1:8080`).
+
 ## Make Targets
 
 | Command              | Description                                       |
@@ -67,11 +102,7 @@ make dev
 
 ## API Documentation
 
-Once the dev server is running (`make dev`), open the URL shown in the terminal and navigate to:
-
-- **Interactive docs** — `/docs`
-
-For example, if the server is at `http://127.0.0.1:50222`, visit `http://127.0.0.1:50222/docs` to browse and test all API endpoints.
+Once the dev server is running (`make dev`), navigate to `/docs` for the interactive Swagger UI where you can browse and test all API endpoints.
 
 ### REST Endpoints
 
@@ -88,9 +119,18 @@ For example, if the server is at `http://127.0.0.1:50222`, visit `http://127.0.0
 | `DELETE` | `/api/products/{id}`      | Delete a product        |
 | `GET`    | `/api/dashboard/stats`    | Dashboard statistics    |
 
+## Theming
+
+The app ships with two themes defined in `crates/app/assets/cyberpunk-theme.css`:
+
+- **Cyberpunk (dark)** — neon cyan accents on deep blue-black backgrounds
+- **Light** — clean whites with teal accents
+
+Toggle between them using the switch in the sidebar footer. Components automatically adapt via CSS custom properties.
+
 ## Offline Builds
 
-The `.sqlx/` directory contains cached query metadata so the project can compile without a running database. This is used by the Dockerfile (`SQLX_OFFLINE=true`) and CI. Regenerate it after changing any SQL queries:
+The `.sqlx/` directory contains cached query metadata so the project compiles without a running database. This is used by the Dockerfile (`SQLX_OFFLINE=true`) and CI. Regenerate it after changing any SQL queries:
 
 ```bash
 make sqlx-prepare
