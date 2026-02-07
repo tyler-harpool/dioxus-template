@@ -303,8 +303,23 @@
     padding: var(--space-sm);
 }
 
+/* ─── Mobile backdrop (hidden on desktop) ─────────────────────────── */
+.sidebar-backdrop {
+    display: none;
+}
+
 /* ─── Mobile responsive: sidebar as overlay ────────────────────────── */
 @media (max-width: 768px) {
+    .sidebar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 49;
+        background: rgba(5, 5, 16, 0.6);
+        backdrop-filter: blur(2px);
+        animation: sidebar-backdrop-in var(--transition-base) ease;
+    }
+
     .sidebar {
         position: fixed;
         top: 0;
@@ -323,4 +338,9 @@
     .sidebar[data-state="open"] {
         width: var(--sidebar-width);
     }
+}
+
+@keyframes sidebar-backdrop-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }

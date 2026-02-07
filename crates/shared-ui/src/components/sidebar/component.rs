@@ -14,6 +14,34 @@ pub fn SidebarProvider(#[props(default = true)] default_open: bool, children: El
     let state = use_signal(|| SidebarState { open: default_open });
     use_context_provider(|| state);
 
+    // Close sidebar on mobile viewports at startup
+    let mut mobile_state = state;
+    use_effect(move || {
+        document::eval(
+            r#"
+            (function() {
+                if (window.innerWidth <= 768) {
+                    // Dispatch a custom event the component can listen for
+                    window.__dioxus_sidebar_mobile = true;
+                }
+            })();
+            "#,
+        );
+        if default_open {
+            // Use spawn to check after JS runs
+            spawn(async move {
+                let result = document::eval("window.__dioxus_sidebar_mobile === true")
+                    .await
+                    .ok();
+                if let Some(val) = result {
+                    if val.as_bool().unwrap_or(false) {
+                        mobile_state.set(SidebarState { open: false });
+                    }
+                }
+            });
+        }
+    });
+
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./style.css") }
         div {
@@ -32,18 +60,20 @@ fn use_sidebar() -> Signal<SidebarState> {
 // ─── Layout components ─────────────────────────────────────────────────
 
 /// The main sidebar container. Collapses based on context state.
+/// On mobile viewports, shows a backdrop overlay when open.
 #[component]
 pub fn Sidebar(
     #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let state = use_sidebar();
+    let mut state = use_sidebar();
+    let is_open = (state)().open;
 
     let base = vec![
         Attribute::new("class", "sidebar", None, false),
         Attribute::new(
             "data-state",
-            if (state)().open { "open" } else { "closed" },
+            if is_open { "open" } else { "closed" },
             None,
             false,
         ),
@@ -51,6 +81,13 @@ pub fn Sidebar(
     let merged = dioxus_primitives::merge_attributes(vec![base, attributes]);
 
     rsx! {
+        // Mobile backdrop overlay - closes sidebar when tapped
+        if is_open {
+            div {
+                class: "sidebar-backdrop",
+                onclick: move |_| state.set(SidebarState { open: false }),
+            }
+        }
         aside {
             ..merged,
             {children}
