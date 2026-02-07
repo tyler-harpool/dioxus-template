@@ -52,3 +52,15 @@
     width: 100%;
     cursor: pointer;
 }
+
+/* ---- Mobile responsive ---- */
+@media (max-width: 768px) {
+    .navbar-bar {
+        padding: 0 var(--space-sm);
+        gap: var(--space-sm);
+    }
+
+    .navbar-title {
+        font-size: var(--font-size-sm);
+    }
+}

@@ -166,3 +166,37 @@
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: var(--space-md);
 }
+
+/* ---- Mobile responsive ---- */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .user-row {
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+    }
+
+    .user-row-spacer {
+        display: none;
+    }
+
+    .user-row-username {
+        width: 100%;
+    }
+
+    .hover-card-body {
+        padding: var(--space-xs);
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-value {
+        font-size: var(--font-size-xl);
+    }
+}

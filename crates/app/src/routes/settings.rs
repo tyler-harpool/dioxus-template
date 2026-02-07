@@ -5,10 +5,10 @@ use shared_ui::{
     AlertDialogActions, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
     AlertDialogRoot, AlertDialogTitle, Badge, BadgeVariant, Button, ButtonVariant, Calendar,
     CalendarGrid, CalendarHeader, CalendarMonthTitle, CalendarNavigation, CalendarNextMonthButton,
-    CalendarPreviousMonthButton, CalendarSelectMonth, CalendarSelectYear, Card, CardContent,
-    Collapsible, CollapsibleContent, CollapsibleTrigger, Date, Form, Input, Label, MenubarContent,
-    MenubarItem, MenubarMenu, MenubarRoot, MenubarSeparator, MenubarTrigger, SelectContent,
-    SelectItem, SelectRoot, SelectTrigger, SelectValue, Separator, Sheet, SheetClose, SheetContent,
+    CalendarPreviousMonthButton, CalendarSelectMonth, CalendarSelectYear, Collapsible,
+    CollapsibleContent, CollapsibleTrigger, Date, Form, Input, Label, MenubarContent, MenubarItem,
+    MenubarMenu, MenubarRoot, MenubarSeparator, MenubarTrigger, SelectContent, SelectItem,
+    SelectRoot, SelectTrigger, SelectValue, Separator, Sheet, SheetClose, SheetContent,
     SheetDescription, SheetFooter, SheetHeader, SheetSide, SheetTitle, Switch, SwitchThumb,
     Textarea, ToastOptions, Toggle, UtcDateTime,
 };
@@ -327,83 +327,79 @@ pub fn Settings() -> Element {
 
             Separator {}
 
-            // -- Advanced Settings in a Card with Collapsible --
-            Card {
-                CardContent {
-                    Collapsible {
-                        CollapsibleTrigger {
-                            Button {
-                                variant: ButtonVariant::Outline,
-                                "Show Advanced Settings"
+            // -- Advanced Settings --
+            Collapsible {
+                CollapsibleTrigger {
+                    Button {
+                        variant: ButtonVariant::Outline,
+                        "Show Advanced Settings"
+                    }
+                }
+
+                CollapsibleContent {
+                    div {
+                        class: "settings-section-lg",
+
+                        // Calendar widget
+                        div {
+                            class: "calendar-container",
+                            Calendar {
+                                selected_date: selected_date,
+                                on_date_change: move |date: Option<Date>| {
+                                    selected_date.set(date);
+                                    if let Some(d) = date {
+                                        toast.info(
+                                            format!("Selected: {} {}-{:02}-{:02}", d.weekday(), d.year(), d.month() as u8, d.day()),
+                                            ToastOptions::new(),
+                                        );
+                                        event_title.set(String::new());
+                                        event_notes.set(String::new());
+                                        event_sheet_open.set(true);
+                                    }
+                                },
+                                view_date: view_date,
+                                on_view_change: move |new_view: Date| {
+                                    view_date.set(new_view);
+                                },
+                                CalendarHeader {
+                                    CalendarNavigation {
+                                        CalendarPreviousMonthButton { "\u{2039}" }
+                                        CalendarMonthTitle {}
+                                        CalendarNextMonthButton { "\u{203a}" }
+                                    }
+                                }
+                                CalendarGrid {}
+                                CalendarSelectMonth {}
+                                CalendarSelectYear {}
+                            }
+
+                            if let Some(date) = selected_date() {
+                                div {
+                                    class: "selected-date-display",
+                                    span { "Selected date:" }
+                                    Badge {
+                                        variant: BadgeVariant::Primary,
+                                        "{date.year()}-{date.month() as u8:02}-{date.day():02}"
+                                    }
+                                }
                             }
                         }
 
-                        CollapsibleContent {
-                            div {
-                                class: "settings-section-lg",
+                        Separator {}
 
-                                // Calendar widget
-                                div {
-                                    class: "calendar-container",
-                                    Calendar {
-                                        selected_date: selected_date,
-                                        on_date_change: move |date: Option<Date>| {
-                                            selected_date.set(date);
-                                            if let Some(d) = date {
-                                                toast.info(
-                                                    format!("Selected: {} {}-{:02}-{:02}", d.weekday(), d.year(), d.month() as u8, d.day()),
-                                                    ToastOptions::new(),
-                                                );
-                                                event_title.set(String::new());
-                                                event_notes.set(String::new());
-                                                event_sheet_open.set(true);
-                                            }
-                                        },
-                                        view_date: view_date,
-                                        on_view_change: move |new_view: Date| {
-                                            view_date.set(new_view);
-                                        },
-                                        CalendarHeader {
-                                            CalendarNavigation {
-                                                CalendarPreviousMonthButton { "\u{2039}" }
-                                                CalendarMonthTitle {}
-                                                CalendarNextMonthButton { "\u{203a}" }
-                                            }
-                                        }
-                                        CalendarGrid {}
-                                        CalendarSelectMonth {}
-                                        CalendarSelectYear {}
-                                    }
-
-                                    if let Some(date) = selected_date() {
-                                        div {
-                                            class: "selected-date-display",
-                                            span { "Selected date:" }
-                                            Badge {
-                                                variant: BadgeVariant::Primary,
-                                                "{date.year()}-{date.month() as u8:02}-{date.day():02}"
-                                            }
-                                        }
-                                    }
-                                }
-
-                                Separator {}
-
-                                // Danger zone
-                                div {
-                                    class: "danger-zone-stack",
-                                    p {
-                                        class: "danger-zone-text",
-                                        "Irreversible actions that affect your account permanently."
-                                    }
-                                    Button {
-                                        variant: ButtonVariant::Destructive,
-                                        onclick: move |_| {
-                                            delete_dialog_open.set(true);
-                                        },
-                                        "Delete Account"
-                                    }
-                                }
+                        // Danger zone
+                        div {
+                            class: "danger-zone-stack",
+                            p {
+                                class: "danger-zone-text",
+                                "Irreversible actions that affect your account permanently."
+                            }
+                            Button {
+                                variant: ButtonVariant::Destructive,
+                                onclick: move |_| {
+                                    delete_dialog_open.set(true);
+                                },
+                                "Delete Account"
                             }
                         }
                     }

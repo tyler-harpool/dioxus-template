@@ -92,3 +92,25 @@
     font-size: var(--font-size-sm);
     margin: 0;
 }
+
+/* ---- Mobile responsive ---- */
+@media (max-width: 768px) {
+    .settings-title {
+        font-size: var(--font-size-xl);
+    }
+
+    .settings-toggle-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
+
+    .settings-theme-group {
+        width: 100%;
+    }
+
+    .calendar-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
