@@ -15,13 +15,13 @@
     pointer-events: none;
 }
 
-.cyber-dialog {
+.cyber-dialog-content {
     position: relative;
     min-width: 320px;
     max-width: 520px;
     width: 90vw;
     padding: 1.5rem;
-    background: var(--primary-color-4);
+    background: var(--color-surface-dialog);
     color: var(--color-on-surface);
     border: 1px solid var(--color-primary);
     border-radius: 8px;
@@ -31,7 +31,7 @@
     animation: cyber-dialog-content-in 0.25s ease-out;
 }
 
-.cyber-dialog-overlay[data-state="closed"] .cyber-dialog {
+.cyber-dialog-overlay[data-state="closed"] .cyber-dialog-content {
     animation: cyber-dialog-content-out 0.15s ease-in forwards;
 }
 
@@ -51,7 +51,7 @@
     line-height: 1.5;
 }
 
-.cyber-dialog button[aria-label="Close"] {
+.cyber-dialog-content button[aria-label="Close"] {
     position: absolute;
     top: 0.75rem;
     right: 0.75rem;
@@ -69,12 +69,12 @@
     transition: all 0.15s ease;
 }
 
-.cyber-dialog button[aria-label="Close"]:hover {
+.cyber-dialog-content button[aria-label="Close"]:hover {
     background: color-mix(in srgb, var(--color-primary) 15%, transparent);
     border-color: var(--color-primary);
 }
 
-.cyber-dialog button[aria-label="Close"]:focus-visible {
+.cyber-dialog-content button[aria-label="Close"]:focus-visible {
     outline: none;
     box-shadow:
         0 0 0 2px var(--focused-border-color),
@@ -114,7 +114,7 @@
 }
 
 @media (max-width: 768px) {
-    .cyber-dialog {
+    .cyber-dialog-content {
         max-width: 95vw;
         padding: var(--space-md);
     }

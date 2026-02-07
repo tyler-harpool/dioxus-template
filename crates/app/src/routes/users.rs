@@ -6,7 +6,7 @@ use shared_ui::{
     AlertDialogDescription, AlertDialogRoot, AlertDialogTitle, Avatar, AvatarFallback, Badge,
     BadgeVariant, Button, ButtonVariant, Checkbox, CheckboxIndicator, CheckboxState, ContentAlign,
     ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, DialogContent,
-    DialogDescription, DialogRoot, DialogTitle, Form, Input, Label, PopoverContent, PopoverRoot,
+    DialogDescription, DialogRoot, DialogTitle, Input, Label, PopoverContent, PopoverRoot,
     PopoverTrigger, Separator, ToastOptions, Toolbar, ToolbarButton, ToolbarSeparator,
 };
 
@@ -31,7 +31,7 @@ pub fn Users() -> Element {
     let has_selection = !selected_ids.read().is_empty();
 
     // Handle form save (create or update)
-    let handle_save = move |_: FormEvent| {
+    let handle_save = move |_: MouseEvent| {
         let username = form_username.read().clone();
         let display_name = form_display_name.read().clone();
         let editing = editing_user.read().clone();
@@ -277,47 +277,45 @@ pub fn Users() -> Element {
                         }
                     }
 
-                    Form {
-                        onsubmit: handle_save,
+                    div {
+                        class: "dialog-form",
+
                         div {
-                            class: "dialog-form",
-
-                            div {
-                                class: "dialog-field",
-                                Label { html_for: "username-field", "Username" }
-                                Input {
-                                    value: form_username(),
-                                    placeholder: "Enter username",
-                                    label: "",
-                                    on_input: move |evt: FormEvent| form_username.set(evt.value()),
-                                }
+                            class: "dialog-field",
+                            Label { html_for: "username-field", "Username" }
+                            Input {
+                                value: form_username(),
+                                placeholder: "Enter username",
+                                label: "",
+                                on_input: move |evt: FormEvent| form_username.set(evt.value()),
                             }
+                        }
 
-                            div {
-                                class: "dialog-field",
-                                Label { html_for: "display-name-field", "Display Name" }
-                                Input {
-                                    value: form_display_name(),
-                                    placeholder: "Enter display name",
-                                    label: "",
-                                    on_input: move |evt: FormEvent| form_display_name.set(evt.value()),
-                                }
+                        div {
+                            class: "dialog-field",
+                            Label { html_for: "display-name-field", "Display Name" }
+                            Input {
+                                value: form_display_name(),
+                                placeholder: "Enter display name",
+                                label: "",
+                                on_input: move |evt: FormEvent| form_display_name.set(evt.value()),
                             }
+                        }
 
-                            div {
-                                class: "dialog-actions",
-                                Button {
-                                    variant: ButtonVariant::Ghost,
-                                    onclick: move |_| {
-                                        show_create_dialog.set(false);
-                                        editing_user.set(None);
-                                    },
-                                    "Cancel"
-                                }
-                                Button {
-                                    variant: ButtonVariant::Primary,
-                                    "Save"
-                                }
+                        div {
+                            class: "dialog-actions",
+                            Button {
+                                variant: ButtonVariant::Ghost,
+                                onclick: move |_| {
+                                    show_create_dialog.set(false);
+                                    editing_user.set(None);
+                                },
+                                "Cancel"
+                            }
+                            Button {
+                                variant: ButtonVariant::Primary,
+                                onclick: handle_save,
+                                "Save"
                             }
                         }
                     }

@@ -82,6 +82,7 @@
     --color-background: var(--primary-color-2);
     --color-surface: var(--primary-color-3);
     --color-surface-raised: var(--primary-color-5);
+    --color-surface-dialog: var(--primary-color-6);
     --color-on-surface: var(--secondary-color-1);
     --color-on-surface-muted: var(--secondary-color-4);
 
@@ -142,6 +143,7 @@
     --color-background: var(--primary-color-2);
     --color-surface: var(--primary-color-1);
     --color-surface-raised: var(--primary-color-3);
+    --color-surface-dialog: var(--primary-color-1);
     --color-on-surface: var(--secondary-color-1);
     --color-on-surface-muted: var(--secondary-color-4);
 
