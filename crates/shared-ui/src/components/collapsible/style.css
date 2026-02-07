@@ -5,7 +5,6 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md, 0.5rem);
     background-color: var(--color-surface);
-    overflow: hidden;
 }
 
 .collapsible[data-disabled="true"] {
@@ -50,6 +49,7 @@
 
 .collapsible-content[data-open="true"] {
     padding: 0 1rem 0.75rem 1rem;
+    overflow: visible;
     animation: collapsible-expand 0.2s ease-out;
 }
 

@@ -3,12 +3,13 @@ use server::api::{create_product, delete_product, list_products, update_product}
 use shared_types::Product;
 use shared_ui::{
     use_toast, Badge, BadgeVariant, Button, ButtonVariant, Card, CardContent, CardHeader,
-    CardTitle, Collapsible, CollapsibleContent, CollapsibleTrigger, DatePicker, DatePickerCalendar,
-    DatePickerInput, DatePickerPopover, Form, Input, Label, RadioGroup, RadioGroupItem,
-    SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValue, Separator, Sheet,
-    SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetSide, SheetTitle,
-    Skeleton, SliderRange, SliderRoot, SliderThumb, SliderTrack, SliderValue, TabContent, TabList,
-    TabTrigger, Tabs, Textarea, TextareaVariant, ToastOptions, ToggleGroup, ToggleGroupItem,
+    CardTitle, Collapsible, CollapsibleContent, CollapsibleTrigger, Date, DatePicker,
+    DatePickerCalendar, DatePickerInput, DatePickerPopover, Form, Input, Label, RadioGroup,
+    RadioGroupItem, SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValue, Separator,
+    Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetSide,
+    SheetTitle, Skeleton, SliderRange, SliderRoot, SliderThumb, SliderTrack, SliderValue,
+    TabContent, TabList, TabTrigger, Tabs, Textarea, TextareaVariant, ToastOptions, ToggleGroup,
+    ToggleGroupItem,
 };
 
 /// Maximum price bound used by the slider filter.
@@ -27,18 +28,37 @@ fn badge_variant_for_status(status: &str) -> BadgeVariant {
     }
 }
 
-/// Filters a product list by status tab, category, and maximum price.
+/// Filters a product list by status tab, search query, category, price, and date.
 fn filter_products(
     products: &[Product],
     tab: &str,
+    search: &str,
     category: &str,
     price_max: f64,
+    date_after: Option<Date>,
 ) -> Vec<Product> {
+    let query = search.to_lowercase();
     products
         .iter()
         .filter(|p| tab == "all" || p.status == tab)
+        .filter(|p| {
+            query.is_empty()
+                || p.name.to_lowercase().contains(&query)
+                || p.description.to_lowercase().contains(&query)
+        })
         .filter(|p| category == "All" || p.category == category)
         .filter(|p| p.price <= price_max)
+        .filter(|p| {
+            date_after.is_none_or(|d| {
+                let date_str = format!(
+                    "{}-{:02}-{:02}",
+                    d.year(),
+                    d.month() as u8,
+                    d.day()
+                );
+                p.created_at >= date_str
+            })
+        })
         .cloned()
         .collect()
 }
@@ -50,8 +70,10 @@ pub fn Products() -> Element {
     let toast = use_toast();
 
     let mut view_mode = use_signal(|| "grid".to_string());
+    let mut search_query = use_signal(String::new);
     let mut category_filter = use_signal(|| "All".to_string());
     let mut price_max = use_signal(|| PRICE_SLIDER_MAX);
+    let mut date_after = use_signal(|| None::<Date>);
     let mut show_sheet = use_signal(|| false);
     let mut editing_product = use_signal(|| Option::<Product>::None);
 
@@ -137,12 +159,15 @@ pub fn Products() -> Element {
     };
     let is_loading = product_list.is_none();
 
+    let query = search_query();
     let cat = category_filter();
     let pmax = price_max();
+    let dafter = date_after();
 
-    let filtered_all = filter_products(&all_products, "all", &cat, pmax);
-    let filtered_active = filter_products(&all_products, "active", &cat, pmax);
-    let filtered_archived = filter_products(&all_products, "archived", &cat, pmax);
+    let filtered_all = filter_products(&all_products, "all", &query, &cat, pmax, dafter);
+    let filtered_active = filter_products(&all_products, "active", &query, &cat, pmax, dafter);
+    let filtered_archived =
+        filter_products(&all_products, "archived", &query, &cat, pmax, dafter);
 
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./products.css") }
@@ -165,6 +190,17 @@ pub fn Products() -> Element {
             }
 
             Separator {}
+
+            // Search bar
+            div {
+                class: "search-bar",
+                Input {
+                    value: search_query(),
+                    placeholder: "Search products...",
+                    label: "",
+                    on_input: move |evt: FormEvent| search_query.set(evt.value()),
+                }
+            }
 
             // Filter bar inside a Collapsible
             Collapsible {
@@ -224,10 +260,29 @@ pub fn Products() -> Element {
                             class: "filter-control filter-field",
                             Label { html_for: "date-filter", "Created After" }
                             DatePicker {
+                                selected_date: date_after(),
+                                on_value_change: move |val: Option<Date>| {
+                                    date_after.set(val);
+                                },
                                 DatePickerInput {}
                                 DatePickerPopover {
                                     DatePickerCalendar {}
                                 }
+                            }
+                        }
+
+                        // Reset filters
+                        div {
+                            class: "filter-control filter-reset",
+                            Button {
+                                variant: ButtonVariant::Ghost,
+                                onclick: move |_| {
+                                    search_query.set(String::new());
+                                    category_filter.set("All".to_string());
+                                    price_max.set(PRICE_SLIDER_MAX);
+                                    date_after.set(None);
+                                },
+                                "Reset Filters"
                             }
                         }
                     }
