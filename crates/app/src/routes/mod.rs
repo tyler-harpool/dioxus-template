@@ -3,6 +3,7 @@ pub mod products;
 pub mod settings;
 pub mod users;
 
+use crate::ProfileState;
 use dioxus::prelude::*;
 use shared_ui::{
     Avatar, AvatarFallback, DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -36,6 +37,7 @@ pub enum Route {
 fn AppLayout() -> Element {
     let route: Route = use_route();
     let mut theme_is_light = use_signal(|| false);
+    let profile: ProfileState = use_context();
 
     let page_title = match &route {
         Route::Dashboard {} => "Dashboard",
@@ -148,13 +150,18 @@ fn AppLayout() -> Element {
                         DropdownMenu {
                             DropdownMenuTrigger {
                                 Avatar {
-                                    AvatarFallback { "AD" }
+                                    AvatarFallback {
+                                        {profile.display_name.read().split_whitespace().filter_map(|w| w.chars().next()).take(2).collect::<String>().to_uppercase()}
+                                    }
                                 }
                             }
                             DropdownMenuContent {
                                 DropdownMenuItem::<String> {
                                     value: "profile".to_string(),
                                     index: 0usize,
+                                    on_select: move |_: String| {
+                                        navigator().push(Route::Settings {});
+                                    },
                                     "Profile"
                                 }
                                 DropdownMenuSeparator {}

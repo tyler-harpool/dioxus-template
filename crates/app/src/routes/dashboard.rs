@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use server::api::get_dashboard_stats;
 use shared_ui::{
     AspectRatio, Avatar, AvatarFallback, Badge, BadgeVariant, Button, ButtonVariant, Card,
-    CardContent, CardDescription, CardHeader, CardTitle, HoverCard, HoverCardContent,
+    CardContent, CardDescription, CardHeader, CardTitle, ContentSide, HoverCard, HoverCardContent,
     HoverCardTrigger, Progress, ProgressIndicator, Separator, Skeleton, Tooltip, TooltipContent,
     TooltipTrigger,
 };
@@ -161,7 +161,7 @@ fn StatCard(
                                     "?"
                                 }
                             }
-                            TooltipContent { "{tooltip_text}" }
+                            TooltipContent { side: ContentSide::Bottom, "{tooltip_text}" }
                         }
                     }
                 }

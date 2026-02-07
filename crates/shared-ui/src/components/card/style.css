@@ -8,11 +8,16 @@
     border: var(--cyber-border-width) solid var(--color-border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
-    overflow: hidden;
+    overflow: visible;
     transition: box-shadow var(--transition-base), border-color var(--transition-base);
 }
 
+.card {
+    position: relative;
+}
+
 .card:hover {
+    z-index: 1;
     border-color: color-mix(in srgb, var(--color-primary) 50%, var(--color-border));
     box-shadow:
         var(--shadow-md),

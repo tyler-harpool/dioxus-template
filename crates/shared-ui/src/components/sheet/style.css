@@ -152,7 +152,16 @@
 }
 
 @media (max-width: 768px) {
+    .sheet-panel[data-side="right"],
+    .sheet-panel[data-side="left"] {
+        width: 100vw;
+    }
+
     .sheet-content {
         padding: var(--space-md);
+    }
+
+    .sheet-footer {
+        flex-shrink: 0;
     }
 }

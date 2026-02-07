@@ -3,6 +3,13 @@ use dioxus::prelude::*;
 mod routes;
 use routes::Route;
 
+/// Shared profile state accessible across all routes.
+#[derive(Clone, Debug, PartialEq)]
+pub struct ProfileState {
+    pub display_name: Signal<String>,
+    pub email: Signal<String>,
+}
+
 const CYBERPUNK_THEME: Asset = asset!("/assets/cyberpunk-theme.css");
 
 fn main() {
@@ -18,6 +25,11 @@ fn main() {
 
 #[component]
 fn App() -> Element {
+    use_context_provider(|| ProfileState {
+        display_name: Signal::new("Admin User".to_string()),
+        email: Signal::new("admin@cyberapp.io".to_string()),
+    });
+
     rsx! {
         document::Link { rel: "stylesheet", href: CYBERPUNK_THEME }
         shared_ui::theme::ThemeSeed {}

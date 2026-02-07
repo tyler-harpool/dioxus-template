@@ -33,6 +33,9 @@
 }
 
 .toggle[data-state="on"]:hover:not([data-disabled="true"]) {
+    background-color: var(--color-primary);
+    color: var(--color-on-primary, #000);
+    filter: brightness(1.15);
     box-shadow: 0 0 12px var(--color-primary), 0 0 20px var(--color-primary);
 }
 

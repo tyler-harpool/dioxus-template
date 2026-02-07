@@ -1,6 +1,6 @@
 .cyber-calendar {
-    display: inline-flex;
-    flex-direction: column;
+    display: inline-grid;
+    grid-template-columns: auto auto;
     gap: 0.5rem;
     padding: 1rem;
     background: var(--primary-color-4);
@@ -10,7 +10,12 @@
     box-shadow:
         0 0 12px color-mix(in srgb, var(--color-primary) 20%, transparent),
         0 4px 16px rgba(0, 0, 0, 0.3);
-    min-width: 280px;
+}
+
+/* Header and grid span both columns */
+.cyber-calendar > .cyber-calendar-header,
+.cyber-calendar > .cyber-calendar-grid {
+    grid-column: 1 / -1;
 }
 
 .cyber-calendar[data-disabled="true"] {
@@ -31,7 +36,9 @@
     gap: 0.5rem;
 }
 
-.cyber-calendar-nav-btn {
+.cyber-calendar-nav-btn,
+.calendar-nav-prev,
+.calendar-nav-next {
     background: transparent;
     color: var(--color-on-surface);
     border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
@@ -47,20 +54,26 @@
     transition: all 0.15s ease;
 }
 
-.cyber-calendar-nav-btn:hover {
+.cyber-calendar-nav-btn:hover,
+.calendar-nav-prev:hover,
+.calendar-nav-next:hover {
     background: color-mix(in srgb, var(--color-primary) 15%, transparent);
     border-color: var(--color-primary);
     color: var(--color-primary);
 }
 
-.cyber-calendar-nav-btn:focus-visible {
+.cyber-calendar-nav-btn:focus-visible,
+.calendar-nav-prev:focus-visible,
+.calendar-nav-next:focus-visible {
     outline: none;
     box-shadow:
         0 0 0 2px var(--focused-border-color),
         var(--cyber-neon-glow);
 }
 
-.cyber-calendar-nav-btn:disabled {
+.cyber-calendar-nav-btn:disabled,
+.calendar-nav-prev:disabled,
+.calendar-nav-next:disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }
@@ -75,7 +88,7 @@
 
 .cyber-calendar-grid {
     border-collapse: collapse;
-    width: 100%;
+    width: auto;
 }
 
 .cyber-calendar-grid th {
@@ -161,12 +174,19 @@
     color: var(--color-on-primary);
 }
 
-/* Select container: positions the native select over the custom display */
-.calendar-month-select-container,
+/* Select containers: month on left, year on right like the nav arrows */
+.calendar-month-select-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+}
+
 .calendar-year-select-container {
     position: relative;
     display: inline-flex;
     align-items: center;
+    justify-self: end;
 }
 
 /* Native select: transparent overlay for click/focus, full coverage */
@@ -180,6 +200,15 @@
     cursor: pointer;
     font-size: 0.85rem;
     z-index: 1;
+    background: var(--color-surface);
+    color: var(--color-on-surface);
+}
+
+/* Style native dropdown options for dark theme readability */
+.cyber-calendar-select-month option,
+.cyber-calendar-select-year option {
+    background: var(--color-surface);
+    color: var(--color-on-surface);
 }
 
 /* Custom display value: the visible styled element */
@@ -235,7 +264,16 @@
 
     .cyber-calendar-grid td button,
     .cyber-calendar-day {
-        min-width: 2rem;
-        min-height: 2rem;
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.8rem;
+    }
+
+    .cyber-calendar-nav-btn,
+    .calendar-nav-prev,
+    .calendar-nav-next {
+        width: 1.75rem;
+        height: 1.75rem;
+        font-size: 0.8rem;
     }
 }

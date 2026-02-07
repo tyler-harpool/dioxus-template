@@ -52,6 +52,15 @@
     color: var(--color-on-surface);
 }
 
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    color: var(--color-on-surface);
+    font-size: var(--font-size-md);
+}
+
 .settings-toggle-row {
     display: flex;
     align-items: center;
@@ -61,6 +70,15 @@
 .settings-toggle-label {
     font-weight: 500;
     color: var(--color-on-surface);
+}
+
+.selected-date-display {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-on-surface-muted);
 }
 
 .danger-zone-stack {

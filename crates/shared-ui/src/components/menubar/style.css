@@ -122,12 +122,16 @@
 
 @media (max-width: 768px) {
     .cyber-menubar {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
     }
 
     .cyber-menubar-content {
-        max-width: 90vw;
+        position: fixed;
+        top: auto;
+        left: var(--space-md);
+        right: var(--space-md);
+        min-width: unset;
+        width: calc(100vw - 2 * var(--space-md, 1rem));
+        margin-top: 4px;
     }
 }

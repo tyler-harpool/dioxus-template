@@ -1,19 +1,25 @@
+use crate::ProfileState;
 use dioxus::prelude::*;
 use shared_ui::{
-    Accordion, AccordionContent, AccordionItem, AccordionTrigger, Button, ButtonVariant, Calendar,
+    use_toast, Accordion, AccordionContent, AccordionItem, AccordionTrigger, AlertDialogAction,
+    AlertDialogActions, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
+    AlertDialogRoot, AlertDialogTitle, Badge, BadgeVariant, Button, ButtonVariant, Calendar,
     CalendarGrid, CalendarHeader, CalendarMonthTitle, CalendarNavigation, CalendarNextMonthButton,
     CalendarPreviousMonthButton, CalendarSelectMonth, CalendarSelectYear, Card, CardContent,
-    CardHeader, CardTitle, Collapsible, CollapsibleContent, CollapsibleTrigger, Form, Input, Label,
-    MenubarContent, MenubarItem, MenubarMenu, MenubarRoot, MenubarSeparator, MenubarTrigger,
-    RadioGroup, RadioGroupItem, Separator, Switch, SwitchThumb, Toggle,
+    Collapsible, CollapsibleContent, CollapsibleTrigger, Date, Form, Input, Label, MenubarContent,
+    MenubarItem, MenubarMenu, MenubarRoot, MenubarSeparator, MenubarTrigger, RadioGroup,
+    RadioGroupItem, Separator, Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter,
+    SheetHeader, SheetSide, SheetTitle, Switch, SwitchThumb, Textarea, ToastOptions, Toggle,
+    UtcDateTime,
 };
 
 /// Settings page with menubar navigation, accordion sections, and advanced collapsible.
 #[component]
 pub fn Settings() -> Element {
-    // Profile state
-    let mut profile_name = use_signal(|| String::from("Admin User"));
-    let mut profile_email = use_signal(|| String::from("admin@cyberapp.io"));
+    // Profile state (shared with layout via context)
+    let profile: ProfileState = use_context();
+    let mut profile_name = profile.display_name;
+    let mut profile_email = profile.email;
 
     // Appearance state
     let mut animations_enabled = use_signal(|| true);
@@ -23,6 +29,20 @@ pub fn Settings() -> Element {
     let mut email_notifs = use_signal(|| true);
     let mut push_notifs = use_signal(|| false);
     let mut weekly_digest = use_signal(|| true);
+
+    // Calendar state
+    let mut selected_date = use_signal(|| None::<Date>);
+    let mut view_date = use_signal(|| UtcDateTime::now().date());
+
+    // Event sheet state
+    let mut event_sheet_open = use_signal(|| false);
+    let mut event_title = use_signal(|| String::new());
+    let mut event_notes = use_signal(|| String::new());
+
+    // Delete account dialog state
+    let mut delete_dialog_open = use_signal(|| false);
+
+    let toast = use_toast();
 
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./settings.css") }
@@ -37,16 +57,23 @@ pub fn Settings() -> Element {
             }
 
             // -- Menubar at top --
-            div {
-                class: "scroll-x-mobile",
             MenubarRoot {
                 MenubarMenu {
                     index: 0usize,
                     MenubarTrigger { "General" }
                     MenubarContent {
-                        MenubarItem { index: 0usize, value: "profile", "Profile" }
-                        MenubarItem { index: 1usize, value: "account", "Account" }
-                        MenubarItem { index: 2usize, value: "security", "Security" }
+                        MenubarItem { index: 0usize, value: "profile",
+                            on_select: move |_: String| { toast.info("Profile selected".to_string(), ToastOptions::new()); },
+                            "Profile"
+                        }
+                        MenubarItem { index: 1usize, value: "account",
+                            on_select: move |_: String| { toast.info("Account selected".to_string(), ToastOptions::new()); },
+                            "Account"
+                        }
+                        MenubarItem { index: 2usize, value: "security",
+                            on_select: move |_: String| { toast.info("Security selected".to_string(), ToastOptions::new()); },
+                            "Security"
+                        }
                     }
                 }
 
@@ -56,9 +83,18 @@ pub fn Settings() -> Element {
                     index: 1usize,
                     MenubarTrigger { "Appearance" }
                     MenubarContent {
-                        MenubarItem { index: 0usize, value: "theme", "Theme" }
-                        MenubarItem { index: 1usize, value: "layout", "Layout" }
-                        MenubarItem { index: 2usize, value: "fonts", "Fonts" }
+                        MenubarItem { index: 0usize, value: "theme",
+                            on_select: move |_: String| { toast.info("Theme selected".to_string(), ToastOptions::new()); },
+                            "Theme"
+                        }
+                        MenubarItem { index: 1usize, value: "layout",
+                            on_select: move |_: String| { toast.info("Layout selected".to_string(), ToastOptions::new()); },
+                            "Layout"
+                        }
+                        MenubarItem { index: 2usize, value: "fonts",
+                            on_select: move |_: String| { toast.info("Fonts selected".to_string(), ToastOptions::new()); },
+                            "Fonts"
+                        }
                     }
                 }
 
@@ -68,12 +104,20 @@ pub fn Settings() -> Element {
                     index: 2usize,
                     MenubarTrigger { "Notifications" }
                     MenubarContent {
-                        MenubarItem { index: 0usize, value: "email-notifs", "Email" }
-                        MenubarItem { index: 1usize, value: "push-notifs", "Push" }
-                        MenubarItem { index: 2usize, value: "digest", "Digest" }
+                        MenubarItem { index: 0usize, value: "email-notifs",
+                            on_select: move |_: String| { toast.info("Email notifications selected".to_string(), ToastOptions::new()); },
+                            "Email"
+                        }
+                        MenubarItem { index: 1usize, value: "push-notifs",
+                            on_select: move |_: String| { toast.info("Push notifications selected".to_string(), ToastOptions::new()); },
+                            "Push"
+                        }
+                        MenubarItem { index: 2usize, value: "digest",
+                            on_select: move |_: String| { toast.info("Digest selected".to_string(), ToastOptions::new()); },
+                            "Digest"
+                        }
                     }
                 }
-            }
             }
 
             Separator {}
@@ -127,7 +171,10 @@ pub fn Settings() -> Element {
                                     Button {
                                         variant: ButtonVariant::Primary,
                                         onclick: move |_| {
-                                            // Save profile action
+                                            toast.success(
+                                                format!("Profile updated: {}", profile_name()),
+                                                ToastOptions::new(),
+                                            );
                                         },
                                         "Save Profile"
                                     }
@@ -158,8 +205,16 @@ pub fn Settings() -> Element {
                                     on_value_change: move |val: String| {
                                         shared_ui::theme::set_theme(&val);
                                     },
-                                    RadioGroupItem { value: "cyberpunk", index: 0usize, "Cyberpunk" }
-                                    RadioGroupItem { value: "light", index: 1usize, "Light" }
+                                    label {
+                                        class: "radio-option",
+                                        RadioGroupItem { value: "cyberpunk", index: 0usize }
+                                        span { "Cyberpunk" }
+                                    }
+                                    label {
+                                        class: "radio-option",
+                                        RadioGroupItem { value: "light", index: 1usize }
+                                        span { "Light" }
+                                    }
                                 }
                             }
 
@@ -269,51 +324,69 @@ pub fn Settings() -> Element {
 
             Separator {}
 
-            // -- Collapsible Advanced section --
-            Collapsible {
-                CollapsibleTrigger {
-                    Button {
-                        variant: ButtonVariant::Outline,
-                        "Advanced Settings"
-                    }
-                }
-
-                CollapsibleContent {
-                    div {
-                        class: "settings-section-lg",
-
-                        // Calendar widget for reference/demo
-                        Card {
-                            CardHeader {
-                                CardTitle { "Schedule" }
+            // -- Advanced Settings in a Card with Collapsible --
+            Card {
+                CardContent {
+                    Collapsible {
+                        CollapsibleTrigger {
+                            Button {
+                                variant: ButtonVariant::Outline,
+                                "Show Advanced Settings"
                             }
-                            CardContent {
+                        }
+
+                        CollapsibleContent {
+                            div {
+                                class: "settings-section-lg",
+
+                                // Calendar widget
                                 div {
                                     class: "calendar-container",
                                     Calendar {
+                                        selected_date: selected_date,
+                                        on_date_change: move |date: Option<Date>| {
+                                            selected_date.set(date);
+                                            if let Some(d) = date {
+                                                toast.info(
+                                                    format!("Selected: {} {}-{:02}-{:02}", d.weekday(), d.year(), d.month() as u8, d.day()),
+                                                    ToastOptions::new(),
+                                                );
+                                                event_title.set(String::new());
+                                                event_notes.set(String::new());
+                                                event_sheet_open.set(true);
+                                            }
+                                        },
+                                        view_date: view_date,
+                                        on_view_change: move |new_view: Date| {
+                                            view_date.set(new_view);
+                                        },
                                         CalendarHeader {
                                             CalendarNavigation {
-                                                CalendarPreviousMonthButton {}
+                                                CalendarPreviousMonthButton { "\u{2039}" }
                                                 CalendarMonthTitle {}
-                                                CalendarNextMonthButton {}
+                                                CalendarNextMonthButton { "\u{203a}" }
                                             }
                                         }
                                         CalendarGrid {}
                                         CalendarSelectMonth {}
                                         CalendarSelectYear {}
                                     }
+
+                                    if let Some(date) = selected_date() {
+                                        div {
+                                            class: "selected-date-display",
+                                            span { "Selected date:" }
+                                            Badge {
+                                                variant: BadgeVariant::Primary,
+                                                "{date.year()}-{date.month() as u8:02}-{date.day():02}"
+                                            }
+                                        }
+                                    }
                                 }
-                            }
-                        }
 
-                        Separator {}
+                                Separator {}
 
-                        // Danger zone
-                        Card {
-                            CardHeader {
-                                CardTitle { "Danger Zone" }
-                            }
-                            CardContent {
+                                // Danger zone
                                 div {
                                     class: "danger-zone-stack",
                                     p {
@@ -322,10 +395,117 @@ pub fn Settings() -> Element {
                                     }
                                     Button {
                                         variant: ButtonVariant::Destructive,
+                                        onclick: move |_| {
+                                            delete_dialog_open.set(true);
+                                        },
                                         "Delete Account"
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+            }
+
+            // -- Event Sheet: slides in when a date is selected --
+            Sheet {
+                open: event_sheet_open(),
+                on_close: move |_| event_sheet_open.set(false),
+                side: SheetSide::Right,
+
+                SheetHeader {
+                    SheetTitle {
+                        if selected_date().is_some() {
+                            "Schedule Event"
+                        }
+                    }
+                    SheetDescription {
+                        if let Some(date) = selected_date() {
+                            span {
+                                "{date.weekday()}, {date.month()} {date.day()}, {date.year()}"
+                            }
+                        }
+                    }
+                }
+
+                SheetContent {
+                    Form {
+                        onsubmit: move |_| {},
+                        div {
+                            class: "settings-form",
+                            div {
+                                class: "settings-field",
+                                Label { html_for: "event-title", "Event Title" }
+                                Input {
+                                    value: event_title(),
+                                    placeholder: "Meeting, Deadline, Reminder...",
+                                    label: "",
+                                    on_input: move |evt: FormEvent| {
+                                        event_title.set(evt.value());
+                                    },
+                                }
+                            }
+                            div {
+                                class: "settings-field",
+                                Label { html_for: "event-notes", "Notes" }
+                                Textarea {
+                                    value: event_notes(),
+                                    placeholder: "Add details about this event...",
+                                    on_input: move |evt: FormEvent| {
+                                        event_notes.set(evt.value());
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+
+                SheetFooter {
+                    SheetClose {
+                        on_close: move |_| event_sheet_open.set(false),
+                    }
+                    Button {
+                        variant: ButtonVariant::Primary,
+                        onclick: move |_| {
+                            if let Some(d) = selected_date() {
+                                let title = if event_title().is_empty() {
+                                    "Untitled Event".to_string()
+                                } else {
+                                    event_title()
+                                };
+                                toast.success(
+                                    format!("\"{}\" scheduled for {}-{:02}-{:02}", title, d.year(), d.month() as u8, d.day()),
+                                    ToastOptions::new(),
+                                );
+                                event_sheet_open.set(false);
+                            }
+                        },
+                        "Save Event"
+                    }
+                }
+            }
+
+            // -- Delete Account confirmation dialog --
+            AlertDialogRoot {
+                open: delete_dialog_open(),
+                on_open_change: move |val: bool| delete_dialog_open.set(val),
+
+                AlertDialogContent {
+                    AlertDialogTitle { "Delete Account" }
+                    AlertDialogDescription {
+                        "This action cannot be undone. This will permanently delete your account and remove all associated data."
+                    }
+                    AlertDialogActions {
+                        AlertDialogCancel { "Cancel" }
+                        AlertDialogAction {
+                            on_click: move |_| {
+                                toast.error(
+                                    "Account deletion is not available in this demo.".to_string(),
+                                    ToastOptions::new(),
+                                );
+                                delete_dialog_open.set(false);
+                            },
+                            "Yes, Delete"
                         }
                     }
                 }

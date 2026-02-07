@@ -2,6 +2,7 @@ use dioxus::prelude::*;
 use dioxus_primitives::calendar as prim;
 
 pub use dioxus_primitives::calendar::{CalendarContext, DateRange, RangeCalendarContext};
+pub use time::{Date, UtcDateTime};
 
 #[component]
 pub fn Calendar(mut props: prim::CalendarProps) -> Element {
