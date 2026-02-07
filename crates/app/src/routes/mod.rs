@@ -5,11 +5,11 @@ pub mod users;
 
 use dioxus::prelude::*;
 use shared_ui::{
-    Avatar, AvatarFallback, Button, ButtonVariant, DropdownMenu, DropdownMenuContent,
-    DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Navbar, Separator, Sidebar,
-    SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
-    SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider,
-    SidebarRail, SidebarSeparator, SidebarTrigger, Switch, SwitchThumb,
+    Avatar, AvatarFallback, DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+    DropdownMenuSeparator, DropdownMenuTrigger, Navbar, Separator, Sidebar, SidebarContent,
+    SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader,
+    SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarRail,
+    SidebarSeparator, SidebarTrigger, Switch, SwitchThumb,
 };
 
 use dashboard::Dashboard;
@@ -45,13 +45,15 @@ fn AppLayout() -> Element {
     };
 
     rsx! {
-        SidebarProvider {
+        document::Link { rel: "stylesheet", href: asset!("./layout.css") }
+
+        SidebarProvider { default_open: false,
             Sidebar {
                 SidebarHeader {
                     div {
-                        style: "display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm);",
+                        class: "sidebar-brand",
                         span {
-                            style: "font-size: var(--font-size-lg); font-weight: 700; color: var(--color-primary); font-family: var(--cyber-font-mono);",
+                            class: "sidebar-brand-name",
                             "CyberApp"
                         }
                     }
@@ -99,9 +101,9 @@ fn AppLayout() -> Element {
 
                 SidebarFooter {
                     div {
-                        style: "display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-xs);",
+                        class: "sidebar-footer-row",
                         span {
-                            style: "font-size: var(--font-size-sm); color: var(--color-on-surface-muted);",
+                            class: "sidebar-footer-label",
                             "Light Mode"
                         }
                         Switch {
@@ -126,30 +128,27 @@ fn AppLayout() -> Element {
                 // Top navbar
                 Navbar {
                     div {
-                        style: "display: flex; align-items: center; gap: var(--space-md); width: 100%; padding: 0 var(--space-md);",
+                        class: "navbar-bar",
 
                         SidebarTrigger {
-                            span { style: "font-size: var(--font-size-lg);", "\u{2630}" }
+                            span { class: "navbar-trigger-icon", "\u{2630}" }
                         }
 
                         Separator { horizontal: false }
 
                         span {
-                            style: "font-weight: 600; font-size: var(--font-size-md); color: var(--color-on-surface);",
+                            class: "navbar-title",
                             "{page_title}"
                         }
 
                         // Spacer
-                        div { style: "flex: 1;" }
+                        div { class: "navbar-spacer" }
 
                         // User dropdown
                         DropdownMenu {
                             DropdownMenuTrigger {
-                                Button {
-                                    variant: ButtonVariant::Ghost,
-                                    Avatar {
-                                        AvatarFallback { "AD" }
-                                    }
+                                Avatar {
+                                    AvatarFallback { "AD" }
                                 }
                             }
                             DropdownMenuContent {
@@ -170,7 +169,7 @@ fn AppLayout() -> Element {
                                                 ),
                                             );
                                         },
-                                        style: "width: 100%; cursor: pointer;",
+                                        class: "dropdown-docs-link",
                                         "API Docs"
                                     }
                                 }
@@ -181,7 +180,7 @@ fn AppLayout() -> Element {
 
                 // Page content
                 div {
-                    style: "padding: var(--space-lg); max-width: 1400px; margin: 0 auto; width: 100%;",
+                    class: "page-content",
                     Outlet::<Route> {}
                 }
             }

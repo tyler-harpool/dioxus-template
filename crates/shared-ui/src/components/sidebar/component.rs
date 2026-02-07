@@ -14,34 +14,6 @@ pub fn SidebarProvider(#[props(default = true)] default_open: bool, children: El
     let state = use_signal(|| SidebarState { open: default_open });
     use_context_provider(|| state);
 
-    // Close sidebar on mobile viewports at startup
-    let mut mobile_state = state;
-    use_effect(move || {
-        document::eval(
-            r#"
-            (function() {
-                if (window.innerWidth <= 768) {
-                    // Dispatch a custom event the component can listen for
-                    window.__dioxus_sidebar_mobile = true;
-                }
-            })();
-            "#,
-        );
-        if default_open {
-            // Use spawn to check after JS runs
-            spawn(async move {
-                let result = document::eval("window.__dioxus_sidebar_mobile === true")
-                    .await
-                    .ok();
-                if let Some(val) = result {
-                    if val.as_bool().unwrap_or(false) {
-                        mobile_state.set(SidebarState { open: false });
-                    }
-                }
-            });
-        }
-    });
-
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./style.css") }
         div {
@@ -264,16 +236,7 @@ pub fn SidebarMenuButton(
     rsx! {
         button {
             onclick: move |_| {
-                // Close sidebar on mobile overlay mode
-                spawn(async move {
-                    if let Ok(val) =
-                        document::eval("window.matchMedia('(max-width: 768px)').matches").await
-                    {
-                        if val.as_bool().unwrap_or(false) {
-                            state.set(SidebarState { open: false });
-                        }
-                    }
-                });
+                state.set(SidebarState { open: false });
             },
             ..merged,
             {children}

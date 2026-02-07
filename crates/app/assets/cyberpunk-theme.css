@@ -297,3 +297,73 @@ a:hover {
         transform: translateY(0);
     }
 }
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+/* Page content wrapper */
+.page-content {
+    padding: var(--space-lg);
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .page-content {
+        padding: var(--space-sm);
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-content {
+        padding: var(--space-xs);
+    }
+}
+
+/* ============================================
+   PAGE-LEVEL RESPONSIVE UTILITIES
+   ============================================ */
+
+/* Hide element on mobile */
+.hide-mobile {
+    display: initial;
+}
+
+/* Horizontal scroll container for menubar on narrow screens */
+.scroll-x-mobile {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Product/dashboard page header: flex-wrap for title + button */
+.page-header-responsive {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+/* Filter controls: full-width items on mobile */
+.filter-control {
+    flex: 1 1 180px;
+}
+
+@media (max-width: 768px) {
+    .hide-mobile {
+        display: none !important;
+    }
+
+    .filter-control {
+        flex: 1 1 100%;
+    }
+}
+
+/* Calendar overflow protection */
+.calendar-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}

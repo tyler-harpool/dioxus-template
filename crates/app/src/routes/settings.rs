@@ -25,16 +25,20 @@ pub fn Settings() -> Element {
     let mut weekly_digest = use_signal(|| true);
 
     rsx! {
+        document::Link { rel: "stylesheet", href: asset!("./settings.css") }
+
         div {
-            style: "display: flex; flex-direction: column; gap: var(--space-lg);",
+            class: "settings-page",
 
             // Page heading
             h1 {
-                style: "font-size: var(--font-size-2xl); font-weight: 700; color: var(--color-primary); font-family: var(--cyber-font-mono); margin: 0;",
+                class: "settings-title",
                 "Settings"
             }
 
             // -- Menubar at top --
+            div {
+                class: "scroll-x-mobile",
             MenubarRoot {
                 MenubarMenu {
                     index: 0usize,
@@ -70,6 +74,7 @@ pub fn Settings() -> Element {
                     }
                 }
             }
+            }
 
             Separator {}
 
@@ -83,7 +88,7 @@ pub fn Settings() -> Element {
                     AccordionTrigger { "Profile" }
                     AccordionContent {
                         div {
-                            style: "display: flex; flex-direction: column; gap: var(--space-md); padding: var(--space-md) 0;",
+                            class: "settings-section",
 
                             Form {
                                 onsubmit: move |_evt| {
@@ -91,10 +96,10 @@ pub fn Settings() -> Element {
                                 },
 
                                 div {
-                                    style: "display: flex; flex-direction: column; gap: var(--space-md);",
+                                    class: "settings-form",
 
                                     div {
-                                        style: "display: flex; flex-direction: column; gap: var(--space-xs);",
+                                        class: "settings-field",
                                         Label { html_for: "profile-name", "Display Name" }
                                         Input {
                                             value: profile_name(),
@@ -107,7 +112,7 @@ pub fn Settings() -> Element {
                                     }
 
                                     div {
-                                        style: "display: flex; flex-direction: column; gap: var(--space-xs);",
+                                        class: "settings-field",
                                         Label { html_for: "profile-email", "Email Address" }
                                         Input {
                                             value: profile_email(),
@@ -139,13 +144,13 @@ pub fn Settings() -> Element {
                     AccordionTrigger { "Appearance" }
                     AccordionContent {
                         div {
-                            style: "display: flex; flex-direction: column; gap: var(--space-lg); padding: var(--space-md) 0;",
+                            class: "settings-section-lg",
 
                             // Theme selection via RadioGroup
                             div {
-                                style: "display: flex; flex-direction: column; gap: var(--space-sm);",
+                                class: "settings-theme-group",
                                 span {
-                                    style: "font-weight: 600; font-size: var(--font-size-md); color: var(--color-on-surface);",
+                                    class: "settings-theme-label",
                                     "Theme"
                                 }
                                 RadioGroup {
@@ -162,9 +167,9 @@ pub fn Settings() -> Element {
 
                             // Animations toggle
                             div {
-                                style: "display: flex; align-items: center; justify-content: space-between;",
+                                class: "settings-toggle-row",
                                 span {
-                                    style: "font-weight: 500; color: var(--color-on-surface);",
+                                    class: "settings-toggle-label",
                                     "Enable animations"
                                 }
                                 Toggle {
@@ -180,9 +185,9 @@ pub fn Settings() -> Element {
 
                             // Compact mode switch
                             div {
-                                style: "display: flex; align-items: center; justify-content: space-between;",
+                                class: "settings-toggle-row",
                                 span {
-                                    style: "font-weight: 500; color: var(--color-on-surface);",
+                                    class: "settings-toggle-label",
                                     "Compact mode"
                                 }
                                 Switch {
@@ -204,13 +209,13 @@ pub fn Settings() -> Element {
                     AccordionTrigger { "Notifications" }
                     AccordionContent {
                         div {
-                            style: "display: flex; flex-direction: column; gap: var(--space-md); padding: var(--space-md) 0;",
+                            class: "settings-section",
 
                             // Email notifications
                             div {
-                                style: "display: flex; align-items: center; justify-content: space-between;",
+                                class: "settings-toggle-row",
                                 span {
-                                    style: "font-weight: 500; color: var(--color-on-surface);",
+                                    class: "settings-toggle-label",
                                     "Email notifications"
                                 }
                                 Switch {
@@ -226,9 +231,9 @@ pub fn Settings() -> Element {
 
                             // Push notifications
                             div {
-                                style: "display: flex; align-items: center; justify-content: space-between;",
+                                class: "settings-toggle-row",
                                 span {
-                                    style: "font-weight: 500; color: var(--color-on-surface);",
+                                    class: "settings-toggle-label",
                                     "Push notifications"
                                 }
                                 Switch {
@@ -244,9 +249,9 @@ pub fn Settings() -> Element {
 
                             // Weekly digest
                             div {
-                                style: "display: flex; align-items: center; justify-content: space-between;",
+                                class: "settings-toggle-row",
                                 span {
-                                    style: "font-weight: 500; color: var(--color-on-surface);",
+                                    class: "settings-toggle-label",
                                     "Weekly digest"
                                 }
                                 Switch {
@@ -275,7 +280,7 @@ pub fn Settings() -> Element {
 
                 CollapsibleContent {
                     div {
-                        style: "display: flex; flex-direction: column; gap: var(--space-lg); padding: var(--space-md) 0;",
+                        class: "settings-section-lg",
 
                         // Calendar widget for reference/demo
                         Card {
@@ -283,17 +288,20 @@ pub fn Settings() -> Element {
                                 CardTitle { "Schedule" }
                             }
                             CardContent {
-                                Calendar {
-                                    CalendarHeader {
-                                        CalendarNavigation {
-                                            CalendarPreviousMonthButton {}
-                                            CalendarMonthTitle {}
-                                            CalendarNextMonthButton {}
+                                div {
+                                    class: "calendar-container",
+                                    Calendar {
+                                        CalendarHeader {
+                                            CalendarNavigation {
+                                                CalendarPreviousMonthButton {}
+                                                CalendarMonthTitle {}
+                                                CalendarNextMonthButton {}
+                                            }
                                         }
+                                        CalendarGrid {}
+                                        CalendarSelectMonth {}
+                                        CalendarSelectYear {}
                                     }
-                                    CalendarGrid {}
-                                    CalendarSelectMonth {}
-                                    CalendarSelectYear {}
                                 }
                             }
                         }
@@ -307,9 +315,9 @@ pub fn Settings() -> Element {
                             }
                             CardContent {
                                 div {
-                                    style: "display: flex; flex-direction: column; gap: var(--space-sm);",
+                                    class: "danger-zone-stack",
                                     p {
-                                        style: "color: var(--color-on-surface-muted); font-size: var(--font-size-sm); margin: 0;",
+                                        class: "danger-zone-text",
                                         "Irreversible actions that affect your account permanently."
                                     }
                                     Button {

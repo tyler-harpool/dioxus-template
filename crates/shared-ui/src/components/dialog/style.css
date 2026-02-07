@@ -111,3 +111,10 @@
         transform: scale(0.95);
     }
 }
+
+@media (max-width: 768px) {
+    .cyber-dialog {
+        max-width: 95vw;
+        padding: var(--space-md);
+    }
+}

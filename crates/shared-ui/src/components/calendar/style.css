@@ -161,8 +161,33 @@
     color: var(--color-on-primary);
 }
 
+/* Select container: positions the native select over the custom display */
+.calendar-month-select-container,
+.calendar-year-select-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Native select: transparent overlay for click/focus, full coverage */
 .cyber-calendar-select-month,
 .cyber-calendar-select-year {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    font-size: 0.85rem;
+    z-index: 1;
+}
+
+/* Custom display value: the visible styled element */
+.calendar-month-select-value,
+.calendar-year-select-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     background: var(--color-surface);
     color: var(--color-on-surface);
     border: 1px solid var(--color-primary);
@@ -172,17 +197,45 @@
     font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.15s ease;
+    pointer-events: none;
 }
 
-.cyber-calendar-select-month:hover,
-.cyber-calendar-select-year:hover {
+/* SVG chevron icon */
+.select-expand-icon {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+}
+
+/* Hover state: triggered via container */
+.calendar-month-select-container:hover .calendar-month-select-value,
+.calendar-year-select-container:hover .calendar-year-select-value {
     box-shadow: 0 0 6px color-mix(in srgb, var(--color-primary) 30%, transparent);
 }
 
-.cyber-calendar-select-month:focus-visible,
-.cyber-calendar-select-year:focus-visible {
+/* Focus-visible on native select propagates visual to custom display */
+.cyber-calendar-select-month:focus-visible ~ .calendar-month-select-value,
+.cyber-calendar-select-year:focus-visible ~ .calendar-year-select-value {
     outline: none;
     box-shadow:
         0 0 0 2px var(--focused-border-color),
         var(--cyber-neon-glow);
+}
+
+@media (max-width: 768px) {
+    .cyber-calendar {
+        max-width: 100%;
+        font-size: var(--font-size-sm);
+    }
+
+    .cyber-calendar-grid td button,
+    .cyber-calendar-day {
+        min-width: 2rem;
+        min-height: 2rem;
+    }
 }

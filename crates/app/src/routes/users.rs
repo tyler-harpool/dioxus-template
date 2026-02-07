@@ -4,10 +4,10 @@ use shared_types::User;
 use shared_ui::{
     use_toast, AlertDialogAction, AlertDialogActions, AlertDialogCancel, AlertDialogContent,
     AlertDialogDescription, AlertDialogRoot, AlertDialogTitle, Avatar, AvatarFallback, Badge,
-    BadgeVariant, Button, ButtonVariant, Checkbox, CheckboxIndicator, CheckboxState, ContextMenu,
-    ContextMenuContent, ContextMenuItem, ContextMenuTrigger, DialogContent, DialogDescription,
-    DialogRoot, DialogTitle, Form, Input, Label, PopoverContent, PopoverRoot, PopoverTrigger,
-    ScrollArea, Separator, ToastOptions, Toolbar, ToolbarButton, ToolbarSeparator,
+    BadgeVariant, Button, ButtonVariant, Checkbox, CheckboxIndicator, CheckboxState, ContentAlign,
+    ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, DialogContent,
+    DialogDescription, DialogRoot, DialogTitle, Form, Input, Label, PopoverContent, PopoverRoot,
+    PopoverTrigger, Separator, ToastOptions, Toolbar, ToolbarButton, ToolbarSeparator,
 };
 
 /// Extract the first two characters of a name as uppercase initials.
@@ -91,8 +91,10 @@ pub fn Users() -> Element {
     let user_list = user_list.as_ref().and_then(|r| r.as_ref().ok());
 
     rsx! {
+        document::Link { rel: "stylesheet", href: asset!("./users.css") }
+
         div {
-            style: "display: flex; flex-direction: column; gap: var(--space-lg); width: 100%;",
+            class: "users-page",
 
             // Toolbar
             Toolbar {
@@ -119,14 +121,13 @@ pub fn Users() -> Element {
             }
 
             // User List
-            ScrollArea {
-                div {
-                    style: "display: flex; flex-direction: column; width: 100%; max-height: 600px;",
+            div {
+                class: "users-list",
 
                     if let Some(user_vec) = user_list {
                         if user_vec.is_empty() {
                             div {
-                                style: "padding: var(--space-xl); text-align: center; color: var(--color-on-surface-muted);",
+                                class: "users-empty",
                                 "No users found. Click \"Add User\" to create one."
                             }
                         } else {
@@ -143,7 +144,7 @@ pub fn Users() -> Element {
                                         ContextMenu {
                                             ContextMenuTrigger {
                                                 div {
-                                                    style: "display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm) var(--space-md); width: 100%; cursor: default;",
+                                                    class: "user-row",
 
                                                     Checkbox {
                                                         default_checked: if is_checked { CheckboxState::Checked } else { CheckboxState::Unchecked },
@@ -170,39 +171,40 @@ pub fn Users() -> Element {
                                                     }
 
                                                     div {
-                                                        style: "display: flex; flex-direction: column; flex: 1; min-width: 0;",
+                                                        class: "user-info",
                                                         span {
-                                                            style: "font-weight: 600; color: var(--color-on-surface); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;",
+                                                            class: "user-display-name",
                                                             "{user_clone.display_name}"
                                                         }
                                                         span {
-                                                            style: "font-size: var(--font-size-sm); color: var(--color-on-surface-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;",
+                                                            class: "user-username",
                                                             "@{user_clone.username}"
                                                         }
                                                     }
 
-                                                    Badge { variant: BadgeVariant::Secondary, "user" }
+                                                    div {
+                                                        class: "hide-mobile",
+                                                        Badge { variant: BadgeVariant::Secondary, "user" }
+                                                    }
 
                                                     PopoverRoot {
                                                         PopoverTrigger {
-                                                            Button {
-                                                                variant: ButtonVariant::Ghost,
-                                                                "\u{2026}"
-                                                            }
+                                                            "\u{2026}"
                                                         }
                                                         PopoverContent {
+                                                        align: ContentAlign::End,
                                                             div {
-                                                                style: "padding: var(--space-md); display: flex; flex-direction: column; gap: var(--space-sm);",
+                                                                class: "popover-details",
                                                                 span {
-                                                                    style: "font-weight: 700; color: var(--color-primary);",
+                                                                    class: "popover-name",
                                                                     "{user_for_edit.display_name}"
                                                                 }
                                                                 span {
-                                                                    style: "font-size: var(--font-size-sm); color: var(--color-on-surface-muted);",
+                                                                    class: "popover-meta",
                                                                     "Username: {user_for_edit.username}"
                                                                 }
                                                                 span {
-                                                                    style: "font-size: var(--font-size-sm); color: var(--color-on-surface-muted);",
+                                                                    class: "popover-meta",
                                                                     "ID: {user_id}"
                                                                 }
                                                             }
@@ -253,12 +255,11 @@ pub fn Users() -> Element {
                         }
                     } else {
                         div {
-                            style: "padding: var(--space-xl); text-align: center; color: var(--color-on-surface-muted);",
+                            class: "users-empty",
                             "Loading users..."
                         }
                     }
                 }
-            }
 
             // Create / Edit Dialog
             DialogRoot {
@@ -279,10 +280,10 @@ pub fn Users() -> Element {
                     Form {
                         onsubmit: handle_save,
                         div {
-                            style: "display: flex; flex-direction: column; gap: var(--space-md); padding: var(--space-md) 0;",
+                            class: "dialog-form",
 
                             div {
-                                style: "display: flex; flex-direction: column; gap: var(--space-xs);",
+                                class: "dialog-field",
                                 Label { html_for: "username-field", "Username" }
                                 Input {
                                     value: form_username(),
@@ -293,7 +294,7 @@ pub fn Users() -> Element {
                             }
 
                             div {
-                                style: "display: flex; flex-direction: column; gap: var(--space-xs);",
+                                class: "dialog-field",
                                 Label { html_for: "display-name-field", "Display Name" }
                                 Input {
                                     value: form_display_name(),
@@ -304,7 +305,7 @@ pub fn Users() -> Element {
                             }
 
                             div {
-                                style: "display: flex; justify-content: flex-end; gap: var(--space-sm); padding-top: var(--space-sm);",
+                                class: "dialog-actions",
                                 Button {
                                     variant: ButtonVariant::Ghost,
                                     onclick: move |_| {

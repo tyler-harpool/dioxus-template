@@ -3,20 +3,14 @@
     display: inline-block;
 }
 
+/* Trigger is a functional <button> wrapper; keep it visually transparent.
+   Style children or use explicit classes for visual appearance. */
 .cyber-popover-trigger {
-    background: var(--color-surface);
-    color: var(--color-on-surface);
-    border: 1px solid var(--color-primary);
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
+    all: unset;
+    display: inline-flex;
+    align-items: center;
     cursor: pointer;
     font-family: inherit;
-    transition: all 0.2s ease;
-}
-
-.cyber-popover-trigger:hover {
-    filter: brightness(1.2);
-    box-shadow: 0 0 6px color-mix(in srgb, var(--color-primary) 40%, transparent);
 }
 
 .cyber-popover-trigger:focus-visible {
@@ -24,6 +18,7 @@
     box-shadow:
         0 0 0 2px var(--focused-border-color),
         var(--cyber-neon-glow);
+    border-radius: 4px;
 }
 
 .cyber-popover-content {
@@ -65,6 +60,23 @@
     margin-left: 8px;
 }
 
+/* Align: start (default) – left edge of content aligns with left edge of trigger */
+.cyber-popover-content[data-align="start"] {
+    left: 0;
+}
+
+/* Align: center – content centered on trigger */
+.cyber-popover-content[data-align="center"] {
+    left: 50%;
+    translate: -50% 0;
+}
+
+/* Align: end – right edge of content aligns with right edge of trigger */
+.cyber-popover-content[data-align="end"] {
+    left: auto;
+    right: 0;
+}
+
 @keyframes cyber-popover-fade-in {
     from {
         opacity: 0;
@@ -82,5 +94,11 @@
     }
     to {
         opacity: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .cyber-popover-content {
+        max-width: 90vw;
     }
 }

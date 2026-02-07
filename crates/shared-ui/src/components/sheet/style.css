@@ -150,3 +150,9 @@
     outline: none;
     box-shadow: 0 0 0 2px var(--focused-border-color), var(--cyber-neon-glow);
 }
+
+@media (max-width: 768px) {
+    .sheet-content {
+        padding: var(--space-md);
+    }
+}

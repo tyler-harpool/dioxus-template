@@ -1,0 +1,106 @@
+/* Users page styles */
+
+.users-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    width: 100%;
+}
+
+.users-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg, 0.5rem);
+    background: var(--color-surface);
+}
+
+.users-empty {
+    padding: var(--space-xl);
+    text-align: center;
+    color: var(--color-on-surface-muted);
+}
+
+.user-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    width: 100%;
+    cursor: default;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.user-display-name {
+    font-weight: 600;
+    color: var(--color-on-surface);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-username {
+    font-size: var(--font-size-sm);
+    color: var(--color-on-surface-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* "..." action trigger in user rows */
+.user-row .cyber-popover-trigger {
+    padding: 0.35rem 0.6rem;
+    border-radius: 4px;
+    color: var(--color-on-surface);
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+}
+
+.user-row .cyber-popover-trigger:hover {
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: var(--color-primary);
+}
+
+.popover-details {
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.popover-name {
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.popover-meta {
+    font-size: var(--font-size-sm);
+    color: var(--color-on-surface-muted);
+}
+
+.dialog-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-md) 0;
+}
+
+.dialog-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+    padding-top: var(--space-sm);
+}

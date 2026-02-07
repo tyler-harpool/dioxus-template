@@ -75,3 +75,11 @@
     from { opacity: 1; }
     to { opacity: 0; }
 }
+
+@media (max-width: 768px) {
+    .cyber-context-menu-content {
+        max-width: 90vw;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+}

@@ -81,3 +81,10 @@
         opacity: 0;
     }
 }
+
+@media (max-width: 768px) {
+    .cyber-tooltip-content {
+        max-width: 85vw;
+        font-size: var(--font-size-xs);
+    }
+}

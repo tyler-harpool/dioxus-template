@@ -46,6 +46,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: var(--color-on-surface);
 }
 
 .cyber-select-content {
@@ -78,6 +79,7 @@
     padding: 0.5rem 0.75rem;
     border-radius: 4px;
     font-size: 0.875rem;
+    color: var(--color-on-surface);
     cursor: pointer;
     transition: all 0.12s ease;
     user-select: none;
@@ -103,7 +105,8 @@
     pointer-events: none;
 }
 
-.cyber-select-item[data-selected="true"] {
+.cyber-select-item[data-selected="true"],
+.cyber-select-item[aria-selected="true"] {
     color: var(--color-primary);
     font-weight: 500;
 }

@@ -35,11 +35,13 @@ pub fn Dashboard() -> Element {
     let stats_result = stats_resource();
 
     rsx! {
+        document::Link { rel: "stylesheet", href: asset!("./dashboard.css") }
+
         div {
-            style: "display: flex; flex-direction: column; gap: var(--space-lg);",
+            class: "dashboard-page",
 
             h2 {
-                style: "margin: 0; color: var(--color-on-surface); font-family: var(--cyber-font-mono);",
+                class: "dashboard-title",
                 "Dashboard"
             }
 
@@ -54,7 +56,7 @@ pub fn Dashboard() -> Element {
                         }
                         CardContent {
                             p {
-                                style: "color: var(--color-destructive);",
+                                class: "dashboard-error-text",
                                 "{err}"
                             }
                             Button {
@@ -81,7 +83,7 @@ pub fn Dashboard() -> Element {
 fn LoadingSkeletons() -> Element {
     rsx! {
         div {
-            style: "display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-md);",
+            class: "skeleton-grid",
             for _ in 0..SKELETON_COUNT {
                 Card {
                     CardHeader {
@@ -103,7 +105,7 @@ fn StatsGrid(stats: shared_types::DashboardStats) -> Element {
 
     rsx! {
         div {
-            style: "display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-md);",
+            class: "stats-grid",
 
             StatCard {
                 title: "Total Users",
@@ -145,17 +147,17 @@ fn StatCard(
         Card {
             CardHeader {
                 div {
-                    style: "display: flex; align-items: center; justify-content: space-between;",
+                    class: "stat-header-row",
                     CardTitle { "{title}" }
                     div {
-                        style: "display: flex; align-items: center; gap: var(--space-xs);",
+                        class: "stat-actions",
                         if let Some(label) = &badge_label {
                             Badge { variant: BadgeVariant::Primary, "{label}" }
                         }
                         Tooltip {
                             TooltipTrigger {
                                 span {
-                                    style: "display: inline-flex; align-items: center; justify-content: center; width: 1.25rem; height: 1.25rem; border-radius: 50%; background: var(--color-surface-raised); color: var(--color-on-surface-muted); font-size: 0.75rem; cursor: help;",
+                                    class: "stat-info-icon",
                                     "?"
                                 }
                             }
@@ -166,7 +168,7 @@ fn StatCard(
             }
             CardContent {
                 span {
-                    style: "font-size: var(--font-size-2xl); font-weight: 700; color: var(--color-primary); font-family: var(--cyber-font-mono);",
+                    class: "stat-value",
                     "{value}"
                 }
             }
@@ -188,18 +190,18 @@ fn ProgressSection(stats: shared_types::DashboardStats) -> Element {
             }
             CardContent {
                 div {
-                    style: "display: flex; flex-direction: column; gap: var(--space-lg);",
+                    class: "progress-stack",
 
                     div {
-                        style: "display: flex; flex-direction: column; gap: var(--space-xs);",
+                        class: "progress-row",
                         div {
-                            style: "display: flex; justify-content: space-between; align-items: center;",
+                            class: "progress-label-row",
                             span {
-                                style: "font-weight: 600; color: var(--color-on-surface);",
+                                class: "progress-label",
                                 "Inventory Target"
                             }
                             span {
-                                style: "color: var(--color-on-surface-muted); font-size: var(--font-size-sm); font-family: var(--cyber-font-mono);",
+                                class: "progress-value",
                                 "{stats.active_products} / {stats.total_products}"
                             }
                         }
@@ -212,15 +214,15 @@ fn ProgressSection(stats: shared_types::DashboardStats) -> Element {
                     Separator {}
 
                     div {
-                        style: "display: flex; flex-direction: column; gap: var(--space-xs);",
+                        class: "progress-row",
                         div {
-                            style: "display: flex; justify-content: space-between; align-items: center;",
+                            class: "progress-label-row",
                             span {
-                                style: "font-weight: 600; color: var(--color-on-surface);",
+                                class: "progress-label",
                                 "Active Products Ratio"
                             }
                             span {
-                                style: "color: var(--color-on-surface-muted); font-size: var(--font-size-sm); font-family: var(--cyber-font-mono);",
+                                class: "progress-value",
                                 "{active_ratio:.1}%"
                             }
                         }
@@ -254,7 +256,7 @@ fn RecentActivity(stats: shared_types::DashboardStats) -> Element {
                     }
                     if stats.recent_users.is_empty() {
                         p {
-                            style: "color: var(--color-on-surface-muted); text-align: center; padding: var(--space-lg);",
+                            class: "empty-text",
                             "No recent users."
                         }
                     }
@@ -271,7 +273,7 @@ fn UserRow(user: shared_types::User) -> Element {
 
     rsx! {
         div {
-            style: "display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm) 0;",
+            class: "user-row",
 
             Avatar {
                 AvatarFallback { "{fallback_initials}" }
@@ -280,37 +282,37 @@ fn UserRow(user: shared_types::User) -> Element {
             HoverCard {
                 HoverCardTrigger {
                     span {
-                        style: "font-weight: 600; color: var(--color-on-surface); cursor: pointer; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 0.2em;",
+                        class: "user-name-link",
                         "{user.display_name}"
                     }
                 }
                 HoverCardContent {
                     div {
-                        style: "display: flex; flex-direction: column; gap: var(--space-sm); padding: var(--space-sm);",
+                        class: "hover-card-body",
 
                         div {
-                            style: "width: 100%; max-width: 8rem;",
+                            class: "hover-card-avatar-wrap",
                             AspectRatio {
                                 ratio: 1.0,
                                 div {
-                                    style: "width: 100%; height: 100%; background: var(--color-surface-raised); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--color-on-surface-muted); font-family: var(--cyber-font-mono);",
+                                    class: "hover-card-avatar-placeholder",
                                     "{fallback_initials}"
                                 }
                             }
                         }
 
                         div {
-                            style: "display: flex; flex-direction: column; gap: var(--space-2xs);",
+                            class: "hover-card-details",
                             span {
-                                style: "font-weight: 700; color: var(--color-on-surface);",
+                                class: "hover-card-name",
                                 "{user.display_name}"
                             }
                             span {
-                                style: "color: var(--color-on-surface-muted); font-size: var(--font-size-sm);",
+                                class: "hover-card-username",
                                 "@{user.username}"
                             }
                             span {
-                                style: "color: var(--color-on-surface-muted); font-size: var(--font-size-xs); font-family: var(--cyber-font-mono);",
+                                class: "hover-card-id",
                                 "ID: {user.id}"
                             }
                         }
@@ -318,10 +320,10 @@ fn UserRow(user: shared_types::User) -> Element {
                 }
             }
 
-            div { style: "flex: 1;" }
+            div { class: "user-row-spacer" }
 
             span {
-                style: "color: var(--color-on-surface-muted); font-size: var(--font-size-sm); font-family: var(--cyber-font-mono);",
+                class: "hide-mobile user-row-username",
                 "@{user.username}"
             }
         }

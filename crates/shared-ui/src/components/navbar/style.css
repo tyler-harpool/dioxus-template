@@ -115,3 +115,13 @@
     from { opacity: 1; }
     to { opacity: 0; }
 }
+
+/* ─── Mobile responsive ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .cyber-navbar {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        padding: 0.25rem 0.35rem;
+    }
+}

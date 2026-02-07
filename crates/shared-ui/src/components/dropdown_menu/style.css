@@ -3,24 +3,14 @@
     display: inline-block;
 }
 
+/* Trigger is a functional <button> wrapper; keep it visually transparent.
+   Style children or use explicit classes for visual appearance. */
 .cyber-dropdown-menu-trigger {
-    background: var(--color-surface);
-    color: var(--color-on-surface);
-    border: 1px solid var(--color-primary);
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
+    all: unset;
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-}
-
-.cyber-dropdown-menu-trigger:hover {
-    filter: brightness(1.2);
-    box-shadow: 0 0 6px color-mix(in srgb, var(--color-primary) 40%, transparent);
+    cursor: pointer;
+    font-family: inherit;
 }
 
 .cyber-dropdown-menu-trigger:focus-visible {
@@ -28,6 +18,7 @@
     box-shadow:
         0 0 0 2px var(--focused-border-color),
         var(--cyber-neon-glow);
+    border-radius: 4px;
 }
 
 .cyber-dropdown-menu-trigger[data-disabled="true"] {
@@ -107,4 +98,12 @@
 @keyframes cyber-dropdown-out {
     from { opacity: 1; }
     to { opacity: 0; }
+}
+
+@media (max-width: 768px) {
+    .cyber-dropdown-menu-content {
+        max-width: 90vw;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
 }

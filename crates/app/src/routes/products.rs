@@ -145,14 +145,16 @@ pub fn Products() -> Element {
     let filtered_archived = filter_products(&all_products, "archived", &cat, pmax);
 
     rsx! {
+        document::Link { rel: "stylesheet", href: asset!("./products.css") }
+
         div {
-            style: "display: flex; flex-direction: column; gap: var(--space-lg);",
+            class: "products-page",
 
             // Page header
             div {
-                style: "display: flex; justify-content: space-between; align-items: center;",
+                class: "page-header-responsive products-header",
                 h1 {
-                    style: "font-size: var(--font-size-xl); font-weight: 700; color: var(--color-on-surface); margin: 0;",
+                    class: "products-title",
                     "Products"
                 }
                 Button {
@@ -174,11 +176,11 @@ pub fn Products() -> Element {
                 }
                 CollapsibleContent {
                     div {
-                        style: "display: flex; flex-wrap: wrap; gap: var(--space-md); padding: var(--space-md) 0; align-items: flex-end;",
+                        class: "filter-bar",
 
                         // Category filter
                         div {
-                            style: "display: flex; flex-direction: column; gap: var(--space-xs); min-width: 180px;",
+                            class: "filter-control filter-field",
                             Label { html_for: "category-filter", "Category" }
                             SelectRoot::<String> {
                                 on_value_change: move |val: Option<String>| {
@@ -200,7 +202,7 @@ pub fn Products() -> Element {
 
                         // Price range slider
                         div {
-                            style: "display: flex; flex-direction: column; gap: var(--space-xs); min-width: 220px;",
+                            class: "filter-control filter-field",
                             Label { html_for: "price-slider", "Max Price: ${pmax:.0}" }
                             SliderRoot {
                                 default_value: SliderValue::Single(PRICE_SLIDER_MAX),
@@ -219,7 +221,7 @@ pub fn Products() -> Element {
 
                         // Date picker filter
                         div {
-                            style: "display: flex; flex-direction: column; gap: var(--space-xs); min-width: 180px;",
+                            class: "filter-control filter-field",
                             Label { html_for: "date-filter", "Created After" }
                             DatePicker {
                                 DatePickerInput {}
@@ -232,30 +234,33 @@ pub fn Products() -> Element {
                 }
             }
 
-            // View toggle
-            div {
-                style: "display: flex; justify-content: flex-end; gap: var(--space-sm);",
-                ToggleGroup {
-                    default_pressed: std::collections::HashSet::from([0]),
-                    on_pressed_change: move |pressed: std::collections::HashSet<usize>| {
-                        if pressed.contains(&0) {
-                            view_mode.set("grid".to_string());
-                        } else if pressed.contains(&1) {
-                            view_mode.set("list".to_string());
-                        }
-                    },
-                    ToggleGroupItem { index: 0usize, "Grid" }
-                    ToggleGroupItem { index: 1usize, "List" }
-                }
-            }
-
-            // Tabs for status filtering
+            // Tabs + view toggle row
             Tabs {
+                horizontal: true,
                 default_value: "all",
-                TabList {
-                    TabTrigger { value: "all", index: 0usize, "All" }
-                    TabTrigger { value: "active", index: 1usize, "Active" }
-                    TabTrigger { value: "archived", index: 2usize, "Archived" }
+                div {
+                    class: "tabs-toolbar",
+                    TabList {
+                        TabTrigger { value: "all", index: 0usize, "All" }
+                        TabTrigger { value: "active", index: 1usize, "Active" }
+                        TabTrigger { value: "archived", index: 2usize, "Archived" }
+                    }
+                    div {
+                        class: "view-toggle-row",
+                        ToggleGroup {
+                            horizontal: true,
+                            default_pressed: std::collections::HashSet::from([0]),
+                            on_pressed_change: move |pressed: std::collections::HashSet<usize>| {
+                                if pressed.contains(&0) {
+                                    view_mode.set("grid".to_string());
+                                } else if pressed.contains(&1) {
+                                    view_mode.set("list".to_string());
+                                }
+                            },
+                            ToggleGroupItem { index: 0usize, "Grid" }
+                            ToggleGroupItem { index: 1usize, "List" }
+                        }
+                    }
                 }
 
                 TabContent { value: "all", index: 0usize,
@@ -343,7 +348,7 @@ pub fn Products() -> Element {
                         onsubmit: handle_save,
 
                         div {
-                            style: "display: flex; flex-direction: column; gap: var(--space-md); padding: var(--space-md);",
+                            class: "sheet-form",
 
                             Input {
                                 label: "Name",
@@ -368,7 +373,7 @@ pub fn Products() -> Element {
                             }
 
                             div {
-                                style: "display: flex; flex-direction: column; gap: var(--space-xs);",
+                                class: "sheet-field",
                                 Label { html_for: "form-category", "Category" }
                                 SelectRoot::<String> {
                                     default_value: Some(form_category()),
@@ -389,25 +394,25 @@ pub fn Products() -> Element {
                             }
 
                             div {
-                                style: "display: flex; flex-direction: column; gap: var(--space-xs);",
+                                class: "sheet-field",
                                 Label { html_for: "form-status", "Status" }
                                 RadioGroup {
                                     default_value: form_status(),
                                     on_value_change: move |val: String| form_status.set(val),
                                     div {
-                                        style: "display: flex; gap: var(--space-md);",
+                                        class: "status-radio-group",
                                         label {
-                                            style: "display: flex; align-items: center; gap: var(--space-xs); cursor: pointer; color: var(--color-on-surface);",
+                                            class: "status-radio-label",
                                             RadioGroupItem { value: "active", index: 0usize }
                                             "Active"
                                         }
                                         label {
-                                            style: "display: flex; align-items: center; gap: var(--space-xs); cursor: pointer; color: var(--color-on-surface);",
+                                            class: "status-radio-label",
                                             RadioGroupItem { value: "draft", index: 1usize }
                                             "Draft"
                                         }
                                         label {
-                                            style: "display: flex; align-items: center; gap: var(--space-xs); cursor: pointer; color: var(--color-on-surface);",
+                                            class: "status-radio-label",
                                             RadioGroupItem { value: "archived", index: 2usize }
                                             "Archived"
                                         }
@@ -420,7 +425,7 @@ pub fn Products() -> Element {
 
                         SheetFooter {
                             div {
-                                style: "display: flex; gap: var(--space-sm); justify-content: flex-end; width: 100%; padding: var(--space-md);",
+                                class: "sheet-footer-actions",
 
                                 if let Some(ref product) = editing_product() {
                                     {
@@ -464,22 +469,18 @@ fn ProductGrid(
     mut show_sheet: Signal<bool>,
 ) -> Element {
     let is_grid = view_mode == "grid";
-    let container_style = if is_grid {
-        "display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-md);"
-    } else {
-        "display: flex; flex-direction: column; gap: var(--space-sm);"
-    };
+    let container_class = if is_grid { "product-grid" } else { "product-list" };
 
     rsx! {
         div {
-            style: "{container_style}",
+            class: "{container_class}",
             for product in products.iter() {
                 {
                     let p = product.clone();
                     let variant = badge_variant_for_status(&product.status);
                     rsx! {
                         div {
-                            style: "cursor: pointer;",
+                            class: "product-card-link",
                             onclick: move |_| {
                                 let pp = p.clone();
                                 form_name.set(pp.name.clone());
@@ -493,24 +494,24 @@ fn ProductGrid(
                             Card {
                                 CardHeader {
                                     div {
-                                        style: "display: flex; justify-content: space-between; align-items: center;",
+                                        class: "product-card-header",
                                         CardTitle { "{product.name}" }
                                         Badge { variant: variant, "{product.status}" }
                                     }
                                 }
                                 CardContent {
                                     div {
-                                        style: "display: flex; flex-direction: column; gap: var(--space-xs);",
+                                        class: "product-card-body",
                                         p {
-                                            style: "font-size: var(--font-size-lg); font-weight: 600; color: var(--color-primary); margin: 0;",
+                                            class: "product-price",
                                             "${product.price:.2}"
                                         }
                                         p {
-                                            style: "font-size: var(--font-size-sm); color: var(--color-on-surface-muted); margin: 0;",
+                                            class: "product-category",
                                             "{product.category}"
                                         }
                                         p {
-                                            style: "font-size: var(--font-size-sm); color: var(--color-on-surface-muted); margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;",
+                                            class: "product-description",
                                             "{product.description}"
                                         }
                                     }
@@ -528,7 +529,7 @@ fn ProductGrid(
 fn render_skeletons() -> Element {
     rsx! {
         div {
-            style: "display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-md);",
+            class: "skeleton-grid",
             for _ in 0..6 {
                 Card {
                     CardHeader {
@@ -536,7 +537,7 @@ fn render_skeletons() -> Element {
                     }
                     CardContent {
                         div {
-                            style: "display: flex; flex-direction: column; gap: var(--space-xs);",
+                            class: "skeleton-body",
                             Skeleton { style: "height: 20px; width: 40%;" }
                             Skeleton { style: "height: 16px; width: 30%;" }
                             Skeleton { style: "height: 16px; width: 80%;" }
@@ -552,13 +553,13 @@ fn render_skeletons() -> Element {
 fn render_empty_state() -> Element {
     rsx! {
         div {
-            style: "display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--space-xl); gap: var(--space-md); color: var(--color-on-surface-muted);",
+            class: "products-empty",
             p {
-                style: "font-size: var(--font-size-lg); margin: 0;",
+                class: "products-empty-title",
                 "No products found"
             }
             p {
-                style: "font-size: var(--font-size-sm); margin: 0;",
+                class: "products-empty-subtitle",
                 "Try adjusting the filters or create a new product."
             }
         }

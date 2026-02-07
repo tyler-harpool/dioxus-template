@@ -307,6 +307,45 @@
     display: none;
 }
 
+/* ─── Desktop: sidebar always visible ──────────────────────────────── */
+@media (min-width: 769px) {
+    /* Sidebar always visible on desktop, regardless of data-state */
+    .sidebar {
+        width: var(--sidebar-width) !important;
+        position: relative;
+    }
+
+    /* No backdrop needed on desktop */
+    .sidebar-backdrop {
+        display: none !important;
+    }
+
+    /* Hide trigger (hamburger) on desktop - sidebar always visible */
+    .sidebar-trigger {
+        display: none;
+    }
+
+    /* Hide rail on desktop - no collapse toggle */
+    .sidebar-rail {
+        display: none;
+    }
+
+    /* Override collapsed text hiding on desktop - always show text */
+    .sidebar[data-state="closed"] .sidebar-group-label,
+    .sidebar[data-state="closed"] .sidebar-menu-sub {
+        display: block;
+    }
+
+    .sidebar[data-state="closed"] .sidebar-menu-button span {
+        display: inline;
+    }
+
+    .sidebar[data-state="closed"] .sidebar-menu-button {
+        justify-content: flex-start;
+        padding: var(--space-sm) var(--space-md);
+    }
+}
+
 /* ─── Mobile responsive: sidebar as overlay ────────────────────────── */
 @media (max-width: 768px) {
     .sidebar-backdrop {
@@ -325,17 +364,24 @@
         left: 0;
         bottom: 0;
         z-index: 50;
+        width: var(--sidebar-width);
         box-shadow: var(--shadow-lg);
+        transition: transform var(--transition-base), visibility var(--transition-base);
     }
 
     .sidebar[data-state="closed"] {
-        width: 0;
-        border-right: none;
-        overflow: hidden;
+        transform: translateX(-100%);
+        visibility: hidden;
     }
 
     .sidebar[data-state="open"] {
-        width: var(--sidebar-width);
+        transform: translateX(0);
+        visibility: visible;
+    }
+
+    /* On mobile, sidebar inset takes full width */
+    .sidebar-inset {
+        width: 100%;
     }
 }
 
