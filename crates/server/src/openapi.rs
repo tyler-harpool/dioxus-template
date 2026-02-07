@@ -1,5 +1,5 @@
 use axum::Router;
-use shared_types::User;
+use shared_types::{DashboardStats, Product, User};
 use utoipa::OpenApi;
 use utoipa_scalar::{Scalar, Servable};
 
@@ -11,9 +11,11 @@ use utoipa_scalar::{Scalar, Servable};
         crate::api::list_users,
         crate::api::create_user,
     ),
-    components(schemas(User)),
+    components(schemas(User, Product, DashboardStats)),
     tags(
-        (name = "users", description = "User management endpoints")
+        (name = "users", description = "User management endpoints"),
+        (name = "products", description = "Product management endpoints"),
+        (name = "dashboard", description = "Dashboard statistics")
     )
 )]
 pub struct ApiDoc;

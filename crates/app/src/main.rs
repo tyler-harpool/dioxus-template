@@ -3,7 +3,7 @@ use dioxus::prelude::*;
 mod routes;
 use routes::Route;
 
-const GLOBAL_CSS: Asset = asset!("/assets/variables.css");
+const CYBERPUNK_THEME: Asset = asset!("/assets/cyberpunk-theme.css");
 
 fn main() {
     #[cfg(feature = "server")]
@@ -19,7 +19,10 @@ fn main() {
 #[component]
 fn App() -> Element {
     rsx! {
-        document::Link { rel: "stylesheet", href: GLOBAL_CSS }
-        Router::<Route> {}
+        document::Link { rel: "stylesheet", href: CYBERPUNK_THEME }
+        shared_ui::theme::ThemeSeed {}
+        shared_ui::ToastProvider {
+            Router::<Route> {}
+        }
     }
 }

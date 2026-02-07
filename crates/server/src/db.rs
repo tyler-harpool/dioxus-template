@@ -1,4 +1,4 @@
-use sqlx::{Executor, Pool, Postgres};
+use sqlx::{Pool, Postgres};
 use tokio::sync::OnceCell;
 
 static DB: OnceCell<Pool<Postgres>> = OnceCell::const_new();
@@ -13,15 +13,10 @@ async fn init_db() -> Pool<Postgres> {
         .await
         .expect("Failed to connect to database");
 
-    pool.execute(
-        "CREATE TABLE IF NOT EXISTS users (
-            id BIGSERIAL PRIMARY KEY,
-            username TEXT NOT NULL,
-            display_name TEXT NOT NULL
-        )",
-    )
-    .await
-    .expect("Failed to run migrations");
+    sqlx::migrate!("../../migrations")
+        .run(&pool)
+        .await
+        .expect("Failed to run database migrations");
 
     pool
 }

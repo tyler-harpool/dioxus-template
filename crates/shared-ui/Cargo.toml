@@ -5,9 +5,8 @@ edition = "2021"
 
 [dependencies]
 dioxus = { workspace = true }
-dioxus_style = { workspace = true }
+dioxus-primitives = { workspace = true }
 dioxus-free-icons = { workspace = true }
-shared-types = { path = "../shared-types" }
 
 [dev-dependencies]
 dioxus-ssr = { workspace = true }

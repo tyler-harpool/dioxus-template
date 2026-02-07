@@ -15,15 +15,21 @@ pub struct User {
 pub struct Product {
     pub id: i64,
     pub name: String,
+    pub description: String,
     pub price: f64,
+    pub category: String,
+    pub status: String,
+    pub created_at: String,
 }
 
-/// Visual variant for buttons.
+/// Aggregated dashboard statistics.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub enum ButtonVariant {
-    Primary,
-    Secondary,
-    Danger,
+#[cfg_attr(feature = "openapi", derive(utoipa::ToSchema))]
+pub struct DashboardStats {
+    pub total_users: i64,
+    pub total_products: i64,
+    pub active_products: i64,
+    pub recent_users: Vec<User>,
 }
 
 #[cfg(test)]
@@ -58,20 +64,16 @@ mod tests {
         let product = Product {
             id: 1,
             name: "Widget".into(),
+            description: "A test widget".into(),
             price: 29.99,
+            category: "Hardware".into(),
+            status: "active".into(),
+            created_at: "2025-01-01T00:00:00Z".into(),
         };
 
         let json = serde_json::to_string(&product).unwrap();
         let deserialized: Product = serde_json::from_str(&json).unwrap();
 
         assert_eq!(product, deserialized);
-    }
-
-    #[test]
-    fn button_variant_serialization() {
-        let variant = ButtonVariant::Primary;
-        let json = serde_json::to_string(&variant).unwrap();
-        let deserialized: ButtonVariant = serde_json::from_str(&json).unwrap();
-        assert_eq!(variant, deserialized);
     }
 }

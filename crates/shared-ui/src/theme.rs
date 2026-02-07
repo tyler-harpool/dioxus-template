@@ -1,18 +1,62 @@
-/// Design token constants for use in Rust code when CSS variables aren't accessible.
-///
-/// These values mirror the CSS custom properties in `variables.css`.
-/// Prefer using CSS variables in component stylesheets — use these constants
-/// only for programmatic styling or platform-specific rendering.
-/// Dark theme is the default.
-pub const DEFAULT_THEME: &str = "dark";
+use dioxus::prelude::*;
 
-/// Toggle between light and dark themes.
-pub fn toggle_theme(current: &str) -> &str {
-    if current == "dark" {
-        "light"
-    } else {
-        "dark"
+/// Available themes for the application.
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
+pub enum Theme {
+    #[default]
+    Cyberpunk,
+    Light,
+}
+
+impl Theme {
+    /// CSS attribute value for the data-theme attribute.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Theme::Cyberpunk => "cyberpunk",
+            Theme::Light => "light",
+        }
     }
+}
+
+/// Seed the theme on application startup.
+///
+/// Reads the persisted theme from a cookie and applies it to the document root.
+/// Call this once in your top-level App component.
+#[component]
+pub fn ThemeSeed() -> Element {
+    use_effect(|| {
+        // Read theme cookie and apply data-theme attribute to <html>
+        document::eval(
+            r#"
+            (function() {
+                var match = document.cookie.match(/(?:^|;\s*)theme=([^;]*)/);
+                var theme = match ? match[1] : 'cyberpunk';
+                document.documentElement.setAttribute('data-theme', theme);
+            })();
+            "#,
+        );
+    });
+
+    rsx! {}
+}
+
+/// Set the active theme, persisting to a cookie and updating the document.
+///
+/// Uses BroadcastChannel to sync across tabs when available.
+pub fn set_theme(theme: &str) {
+    document::eval(&format!(
+        r#"
+        (function() {{
+            document.cookie = 'theme={theme};path=/;max-age=2592000;SameSite=Lax';
+            document.documentElement.setAttribute('data-theme', '{theme}');
+            try {{
+                var bc = new BroadcastChannel('theme-sync');
+                bc.postMessage('{theme}');
+                bc.close();
+            }} catch(e) {{}}
+        }})();
+        "#,
+    ));
 }
 
 #[cfg(test)]
@@ -20,12 +64,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn toggle_from_dark_to_light() {
-        assert_eq!(toggle_theme("dark"), "light");
+    fn theme_default_is_cyberpunk() {
+        assert_eq!(Theme::default(), Theme::Cyberpunk);
     }
 
     #[test]
-    fn toggle_from_light_to_dark() {
-        assert_eq!(toggle_theme("light"), "dark");
+    fn theme_as_str_values() {
+        assert_eq!(Theme::Cyberpunk.as_str(), "cyberpunk");
+        assert_eq!(Theme::Light.as_str(), "light");
     }
 }

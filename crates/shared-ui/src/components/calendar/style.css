@@ -1,0 +1,188 @@
+.cyber-calendar {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--primary-color-4);
+    color: var(--color-on-surface);
+    border: 1px solid var(--color-primary);
+    border-radius: 8px;
+    box-shadow:
+        0 0 12px color-mix(in srgb, var(--color-primary) 20%, transparent),
+        0 4px 16px rgba(0, 0, 0, 0.3);
+    min-width: 280px;
+}
+
+.cyber-calendar[data-disabled="true"] {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.cyber-calendar-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.cyber-calendar-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.cyber-calendar-nav-btn {
+    background: transparent;
+    color: var(--color-on-surface);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
+    width: 2rem;
+    height: 2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    padding: 0;
+    transition: all 0.15s ease;
+}
+
+.cyber-calendar-nav-btn:hover {
+    background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.cyber-calendar-nav-btn:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px var(--focused-border-color),
+        var(--cyber-neon-glow);
+}
+
+.cyber-calendar-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.cyber-calendar-month-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: center;
+    color: var(--color-primary);
+    flex: 1;
+}
+
+.cyber-calendar-grid {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.cyber-calendar-grid th {
+    padding: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--color-primary);
+    opacity: 0.7;
+}
+
+.cyber-calendar-grid td {
+    padding: 0.125rem;
+    text-align: center;
+}
+
+.cyber-calendar-grid td button,
+.cyber-calendar-day {
+    width: 2.25rem;
+    height: 2.25rem;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-on-surface);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    transition: all 0.12s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.cyber-calendar-grid td button:hover {
+    background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+    color: var(--color-primary);
+}
+
+.cyber-calendar-grid td button:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px var(--focused-border-color),
+        var(--cyber-neon-glow);
+}
+
+.cyber-calendar-grid td button[data-selected="true"] {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    font-weight: 600;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--color-primary) 50%, transparent);
+}
+
+.cyber-calendar-grid td button[data-today="true"] {
+    border: 1px solid var(--color-primary);
+}
+
+.cyber-calendar-grid td button[data-outside-month="true"] {
+    opacity: 0.3;
+}
+
+.cyber-calendar-grid td button[data-disabled="true"],
+.cyber-calendar-grid td button:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+.cyber-calendar-grid td button[data-in-range="true"] {
+    background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+    border-radius: 0;
+}
+
+.cyber-calendar-grid td button[data-range-start="true"] {
+    border-radius: 4px 0 0 4px;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+}
+
+.cyber-calendar-grid td button[data-range-end="true"] {
+    border-radius: 0 4px 4px 0;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+}
+
+.cyber-calendar-select-month,
+.cyber-calendar-select-year {
+    background: var(--color-surface);
+    color: var(--color-on-surface);
+    border: 1px solid var(--color-primary);
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.cyber-calendar-select-month:hover,
+.cyber-calendar-select-year:hover {
+    box-shadow: 0 0 6px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+.cyber-calendar-select-month:focus-visible,
+.cyber-calendar-select-year:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px var(--focused-border-color),
+        var(--cyber-neon-glow);
+}
