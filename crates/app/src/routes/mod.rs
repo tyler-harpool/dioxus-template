@@ -162,10 +162,15 @@ fn AppLayout() -> Element {
                                 DropdownMenuItem::<String> {
                                     value: "docs".to_string(),
                                     index: 1usize,
-                                    a {
-                                        href: "/docs",
-                                        target: "_blank",
-                                        style: "text-decoration: none; color: inherit;",
+                                    div {
+                                        onclick: move |_| {
+                                            navigator().push(
+                                                NavigationTarget::<Route>::External(
+                                                    "/docs".to_string(),
+                                                ),
+                                            );
+                                        },
+                                        style: "width: 100%; cursor: pointer;",
                                         "API Docs"
                                     }
                                 }

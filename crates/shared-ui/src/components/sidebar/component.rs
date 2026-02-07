@@ -241,12 +241,15 @@ pub fn SidebarMenuItem(
 }
 
 /// Interactive button within a SidebarMenuItem.
+/// On mobile viewports (overlay mode), clicking auto-closes the sidebar.
 #[component]
 pub fn SidebarMenuButton(
     #[props(default = false)] active: bool,
     #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
+    let mut state = use_sidebar();
+
     let base = vec![
         Attribute::new("class", "sidebar-menu-button", None, false),
         Attribute::new(
@@ -260,6 +263,18 @@ pub fn SidebarMenuButton(
 
     rsx! {
         button {
+            onclick: move |_| {
+                // Close sidebar on mobile overlay mode
+                spawn(async move {
+                    if let Ok(val) =
+                        document::eval("window.matchMedia('(max-width: 768px)').matches").await
+                    {
+                        if val.as_bool().unwrap_or(false) {
+                            state.set(SidebarState { open: false });
+                        }
+                    }
+                });
+            },
             ..merged,
             {children}
         }
