@@ -167,6 +167,136 @@
     gap: var(--space-md);
 }
 
+/* ---- Tier-gated sections ---- */
+
+.tier-gate-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-2xl) var(--space-lg);
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.tier-gate-upgrade {
+    background: var(--color-surface-raised);
+    border: 1px dashed var(--color-primary);
+}
+
+.tier-gate-locked {
+    background: var(--color-surface-raised);
+    border: 1px dashed var(--color-on-surface-muted);
+    opacity: 0.7;
+}
+
+.tier-gate-icon {
+    font-size: 2rem;
+}
+
+.tier-gate-title {
+    margin: 0;
+    color: var(--color-on-surface);
+    font-family: var(--cyber-font-mono);
+}
+
+.tier-gate-description {
+    margin: 0;
+    color: var(--color-on-surface-muted);
+    font-size: var(--font-size-sm);
+    max-width: 24rem;
+}
+
+/* ---- Analytics section ---- */
+
+.analytics-loading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-md);
+}
+
+.analytics-metric {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+}
+
+.analytics-metric-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-on-surface-muted);
+    font-weight: 600;
+}
+
+.analytics-metric-value {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-primary);
+    font-family: var(--cyber-font-mono);
+}
+
+.analytics-categories {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding-top: var(--space-sm);
+}
+
+.analytics-categories-title {
+    font-weight: 600;
+    color: var(--color-on-surface);
+    font-size: var(--font-size-sm);
+}
+
+.analytics-category-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2xs) 0;
+}
+
+.analytics-category-name {
+    color: var(--color-on-surface);
+    font-size: var(--font-size-sm);
+}
+
+/* ---- Admin panel ---- */
+
+.admin-panel-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.admin-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.admin-stat-label {
+    font-weight: 600;
+    color: var(--color-on-surface);
+}
+
+.admin-actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+/* ---- Sidebar tier badge ---- */
+
+.sidebar-tier-row {
+    padding-bottom: var(--space-xs);
+}
+
 /* ---- Mobile responsive ---- */
 @media (max-width: 768px) {
     .stats-grid {

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, username, display_name FROM users ORDER BY id DESC LIMIT 5",
+  "query": "SELECT id, role, tier FROM users WHERE oauth_provider = $1 AND oauth_provider_id = $2",
   "describe": {
     "columns": [
       {
@@ -10,17 +10,20 @@
       },
       {
         "ordinal": 1,
-        "name": "username",
+        "name": "role",
         "type_info": "Text"
       },
       {
         "ordinal": 2,
-        "name": "display_name",
+        "name": "tier",
         "type_info": "Text"
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Text",
+        "Text"
+      ]
     },
     "nullable": [
       false,
@@ -28,5 +31,5 @@
       false
     ]
   },
-  "hash": "88db23c0ba8fb58ad7ec20501948a83be7a1e508836efa87e6f388ade724352f"
+  "hash": "f40d2fa5fbe268e89b85fcd6b5e0a94eaa4c06e5a333aab780d48102dc39d5c0"
 }

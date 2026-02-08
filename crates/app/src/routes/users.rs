@@ -1,5 +1,6 @@
+use crate::auth::use_is_admin;
 use dioxus::prelude::*;
-use server::api::{create_user, delete_user, list_users, update_user};
+use server::api::{create_user, delete_user, list_users, update_user, update_user_tier};
 use shared_types::User;
 use shared_ui::{
     use_toast, AlertDialogAction, AlertDialogActions, AlertDialogCancel, AlertDialogContent,
@@ -7,7 +8,8 @@ use shared_ui::{
     BadgeVariant, Button, ButtonVariant, Checkbox, CheckboxIndicator, CheckboxState, ContentAlign,
     ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger, DialogContent,
     DialogDescription, DialogRoot, DialogTitle, Input, Label, PopoverContent, PopoverRoot,
-    PopoverTrigger, Separator, ToastOptions, Toolbar, ToolbarButton, ToolbarSeparator,
+    PopoverTrigger, SelectContent, SelectItem, SelectItemIndicator, SelectRoot, SelectTrigger,
+    SelectValue, Separator, ToastOptions, Toolbar, ToolbarButton, ToolbarSeparator,
 };
 
 /// Extract the first two characters of a name as uppercase initials.
@@ -15,11 +17,30 @@ fn initials(name: &str) -> String {
     name.chars().take(2).collect::<String>().to_uppercase()
 }
 
+/// Map a tier string to its badge variant.
+fn tier_badge_variant(tier: &str) -> BadgeVariant {
+    match tier.to_lowercase().as_str() {
+        "premium" => BadgeVariant::Primary,
+        "elite" => BadgeVariant::Destructive,
+        _ => BadgeVariant::Secondary,
+    }
+}
+
+/// Format a tier string for display (capitalized).
+fn tier_display(tier: &str) -> &str {
+    match tier.to_lowercase().as_str() {
+        "premium" => "Premium",
+        "elite" => "Elite",
+        _ => "Free",
+    }
+}
+
 /// Users management page with CRUD operations.
 #[component]
 pub fn Users() -> Element {
     let mut users = use_server_future(list_users)?;
     let toast = use_toast();
+    let is_admin = use_is_admin();
 
     let mut show_create_dialog = use_signal(|| false);
     let mut editing_user: Signal<Option<User>> = use_signal(|| None);
@@ -182,9 +203,77 @@ pub fn Users() -> Element {
                                                         }
                                                     }
 
-                                                    div {
-                                                        class: "hide-mobile",
-                                                        Badge { variant: BadgeVariant::Secondary, "user" }
+                                                    {
+                                                        let tier_str = user_clone.tier.clone();
+                                                        let row_user_id = user_id;
+                                                        rsx! {
+                                                            div {
+                                                                class: "user-tier",
+                                                                if is_admin {
+                                                                    {
+                                                                        let current_tier = tier_str.to_lowercase();
+                                                                        rsx! {
+                                                                            SelectRoot::<String> {
+                                                                                default_value: current_tier.clone(),
+                                                                                placeholder: "Tier",
+                                                                                on_value_change: move |val: Option<String>| {
+                                                                                    if let Some(new_tier) = val {
+                                                                                        spawn(async move {
+                                                                                            match update_user_tier(row_user_id, new_tier.clone()).await {
+                                                                                                Ok(_) => {
+                                                                                                    let label = tier_display(&new_tier);
+                                                                                                    toast.success(
+                                                                                                        format!("Tier updated to {label}"),
+                                                                                                        ToastOptions::new(),
+                                                                                                    );
+                                                                                                    users.restart();
+                                                                                                }
+                                                                                                Err(err) => {
+                                                                                                    toast.error(
+                                                                                                        format!("Failed to update tier: {err}"),
+                                                                                                        ToastOptions::new(),
+                                                                                                    );
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                                    }
+                                                                                },
+                                                                                SelectTrigger {
+                                                                                    aria_label: "Change tier",
+                                                                                    SelectValue {}
+                                                                                }
+                                                                                SelectContent {
+                                                                                    aria_label: "Tier options",
+                                                                                    SelectItem::<String> {
+                                                                                        value: "free",
+                                                                                        index: 0usize,
+                                                                                        "Free"
+                                                                                        SelectItemIndicator { "\u{2713}" }
+                                                                                    }
+                                                                                    SelectItem::<String> {
+                                                                                        value: "premium",
+                                                                                        index: 1usize,
+                                                                                        "Premium"
+                                                                                        SelectItemIndicator { "\u{2713}" }
+                                                                                    }
+                                                                                    SelectItem::<String> {
+                                                                                        value: "elite",
+                                                                                        index: 2usize,
+                                                                                        "Elite"
+                                                                                        SelectItemIndicator { "\u{2713}" }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                } else {
+                                                                    Badge {
+                                                                        variant: tier_badge_variant(&tier_str),
+                                                                        "{tier_display(&tier_str)}"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
 
                                                     PopoverRoot {

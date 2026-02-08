@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "INSERT INTO users (username, display_name) VALUES ($1, $2) RETURNING id, username, display_name",
+  "query": "INSERT INTO users (username, display_name) VALUES ($1, $2) RETURNING id, username, display_name, role, tier",
   "describe": {
     "columns": [
       {
@@ -17,6 +17,16 @@
         "ordinal": 2,
         "name": "display_name",
         "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "role",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "tier",
+        "type_info": "Text"
       }
     ],
     "parameters": {
@@ -28,8 +38,10 @@
     "nullable": [
       false,
       false,
+      false,
+      false,
       false
     ]
   },
-  "hash": "09a7e2fd3600104f2669d6ffb89288e358e327f568e46fd51e1f5472c3c656ad"
+  "hash": "eb002a0d4abf26ba2e0f04badbb6c77176a937b846dcec97baf4e3a449ef75a4"
 }

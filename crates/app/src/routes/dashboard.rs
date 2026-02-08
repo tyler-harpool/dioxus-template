@@ -1,5 +1,7 @@
+use crate::tier_gate::TierGate;
 use dioxus::prelude::*;
-use server::api::get_dashboard_stats;
+use server::api::{get_dashboard_stats, get_premium_analytics};
+use shared_types::UserTier;
 use shared_ui::{
     AspectRatio, Avatar, AvatarFallback, Badge, BadgeVariant, Button, ButtonVariant, Card,
     CardContent, CardDescription, CardHeader, CardTitle, ContentSide, HoverCard, HoverCardContent,
@@ -71,7 +73,22 @@ pub fn Dashboard() -> Element {
                 Some(Ok(stats)) => rsx! {
                     StatsGrid { stats: stats.clone() }
                     ProgressSection { stats: stats.clone() }
+
+                    // Premium tier: analytics section
+                    TierGate {
+                        required: UserTier::Premium,
+                        fallback: rsx! { UpgradePrompt { tier_name: "Premium", feature: "Analytics" } },
+                        AnalyticsSection {}
+                    }
+
                     RecentActivity { stats: stats.clone() }
+
+                    // Elite tier: admin panel
+                    TierGate {
+                        required: UserTier::Elite,
+                        fallback: rsx! { LockedSection { tier_name: "Elite", feature: "Admin Panel" } },
+                        AdminPanel { total_users: stats.total_users }
+                    }
                 },
             }
         }
@@ -161,7 +178,7 @@ fn StatCard(
                                     "?"
                                 }
                             }
-                            TooltipContent { side: ContentSide::Bottom, "{tooltip_text}" }
+                            TooltipContent { side: ContentSide::Top, "{tooltip_text}" }
                         }
                     }
                 }
@@ -325,6 +342,131 @@ fn UserRow(user: shared_types::User) -> Element {
             span {
                 class: "hide-mobile user-row-username",
                 "@{user.username}"
+            }
+        }
+    }
+}
+
+/// Premium analytics section — fetches tier-gated data from the server.
+#[component]
+fn AnalyticsSection() -> Element {
+    let analytics = use_server_future(get_premium_analytics)?;
+    let result = analytics();
+
+    rsx! {
+        Card {
+            CardHeader {
+                div {
+                    class: "stat-header-row",
+                    CardTitle { "Analytics" }
+                    Badge { variant: BadgeVariant::Secondary, "PREMIUM" }
+                }
+                CardDescription { "Revenue and category breakdown for Premium users." }
+            }
+            CardContent {
+                match result {
+                    None => rsx! {
+                        div { class: "analytics-loading",
+                            Skeleton { style: "height: 1.5rem; width: 50%;" }
+                            Skeleton { style: "height: 1rem; width: 70%; margin-top: 0.5rem;" }
+                        }
+                    },
+                    Some(Err(err)) => rsx! {
+                        p { class: "dashboard-error-text", "{err}" }
+                    },
+                    Some(Ok(data)) => rsx! {
+                        div { class: "analytics-grid",
+                            div { class: "analytics-metric",
+                                span { class: "analytics-metric-label", "Total Revenue" }
+                                span { class: "analytics-metric-value", "${data.total_revenue:.2}" }
+                            }
+                            div { class: "analytics-metric",
+                                span { class: "analytics-metric-label", "Avg Price" }
+                                span { class: "analytics-metric-value", "${data.avg_product_price:.2}" }
+                            }
+                            div { class: "analytics-metric",
+                                span { class: "analytics-metric-label", "New Users (30d)" }
+                                span { class: "analytics-metric-value", "{data.users_last_30_days}" }
+                            }
+                        }
+                        if !data.products_by_category.is_empty() {
+                            Separator {}
+                            div { class: "analytics-categories",
+                                span { class: "analytics-categories-title", "Products by Category" }
+                                for cat in data.products_by_category.iter() {
+                                    div { class: "analytics-category-row",
+                                        span { class: "analytics-category-name", "{cat.category}" }
+                                        Badge { variant: BadgeVariant::Primary, "{cat.count}" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        }
+    }
+}
+
+/// Elite admin panel — quick user count and navigation link.
+#[component]
+fn AdminPanel(total_users: i64) -> Element {
+    use crate::routes::Route;
+
+    rsx! {
+        Card {
+            CardHeader {
+                div {
+                    class: "stat-header-row",
+                    CardTitle { "Admin Panel" }
+                    Badge { variant: BadgeVariant::Destructive, "ELITE" }
+                }
+                CardDescription { "System administration tools for Elite users." }
+            }
+            CardContent {
+                div { class: "admin-panel-content",
+                    div { class: "admin-stat-row",
+                        span { class: "admin-stat-label", "Registered Users" }
+                        span { class: "stat-value", "{total_users}" }
+                    }
+                    Separator {}
+                    div { class: "admin-actions",
+                        Link { to: Route::Users {},
+                            Button { variant: ButtonVariant::Primary, "Manage Users" }
+                        }
+                        Link { to: Route::Products {},
+                            Button { variant: ButtonVariant::Secondary, "Manage Products" }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Upgrade prompt shown to users below the required tier.
+#[component]
+fn UpgradePrompt(tier_name: String, feature: String) -> Element {
+    rsx! {
+        div { class: "tier-gate-card tier-gate-upgrade",
+            div { class: "tier-gate-icon", "\u{1F513}" }
+            h3 { class: "tier-gate-title", "Unlock {feature}" }
+            p { class: "tier-gate-description",
+                "Upgrade to {tier_name} to access {feature} and more."
+            }
+        }
+    }
+}
+
+/// Locked section shown to users below the required tier.
+#[component]
+fn LockedSection(tier_name: String, feature: String) -> Element {
+    rsx! {
+        div { class: "tier-gate-card tier-gate-locked",
+            div { class: "tier-gate-icon", "\u{1F512}" }
+            h3 { class: "tier-gate-title", "{feature}" }
+            p { class: "tier-gate-description",
+                "This feature requires {tier_name} tier access."
             }
         }
     }

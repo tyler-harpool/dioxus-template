@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, username, display_name FROM users WHERE id = $1",
+  "query": "SELECT id, username, display_name, role, tier FROM users ORDER BY id DESC LIMIT 5",
   "describe": {
     "columns": [
       {
@@ -17,18 +17,28 @@
         "ordinal": 2,
         "name": "display_name",
         "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "role",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "tier",
+        "type_info": "Text"
       }
     ],
     "parameters": {
-      "Left": [
-        "Int8"
-      ]
+      "Left": []
     },
     "nullable": [
+      false,
+      false,
       false,
       false,
       false
     ]
   },
-  "hash": "396726a6206d9d3150f2ee66265fb21bf586426152c4a5e31cbb8fd9ba3c665e"
+  "hash": "1fb2df87f4deb5ae056050be5062d331ca0490b238384b4e90742762b2dc3206"
 }

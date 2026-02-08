@@ -7,6 +7,7 @@ edition = "2021"
 shared-types = { path = "../shared-types", features = [] }
 dioxus = { workspace = true }
 serde = { workspace = true }
+serde_json = { workspace = true }
 
 # Server-only dependencies (gated behind feature flag)
 sqlx = { workspace = true, optional = true }
@@ -18,6 +19,28 @@ utoipa-swagger-ui = { workspace = true, optional = true }
 utoipa-scalar = { workspace = true, optional = true }
 axum = { workspace = true, optional = true }
 dotenvy = { workspace = true, optional = true }
+tracing = { workspace = true, optional = true }
+tracing-subscriber = { workspace = true, optional = true }
+tracing-opentelemetry = { workspace = true, optional = true }
+opentelemetry = { workspace = true, optional = true }
+opentelemetry_sdk = { workspace = true, optional = true }
+opentelemetry-otlp = { workspace = true, optional = true }
+tower = { version = "0.5", features = ["util"], optional = true }
+tower-http = { workspace = true, optional = true }
+uuid = { workspace = true, optional = true }
+validator = { workspace = true, optional = true }
+jsonwebtoken = { workspace = true, optional = true }
+argon2 = { workspace = true, optional = true }
+chrono = { workspace = true, optional = true }
+oauth2 = { workspace = true, optional = true }
+urlencoding = { workspace = true, optional = true }
+cookie = { workspace = true, optional = true }
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
+tokio = { workspace = true }
+axum = { workspace = true }
+serde_json = { workspace = true }
 
 [features]
 default = []
@@ -33,4 +56,22 @@ server = [
     "dep:axum",
     "dep:dotenvy",
     "shared-types/openapi",
+    "shared-types/server",
+    "shared-types/validation",
+    "dep:validator",
+    "dep:tracing",
+    "dep:tracing-subscriber",
+    "dep:tracing-opentelemetry",
+    "dep:opentelemetry",
+    "dep:opentelemetry_sdk",
+    "dep:opentelemetry-otlp",
+    "dep:tower",
+    "dep:tower-http",
+    "dep:uuid",
+    "dep:jsonwebtoken",
+    "dep:argon2",
+    "dep:chrono",
+    "dep:oauth2",
+    "dep:urlencoding",
+    "dep:cookie",
 ]

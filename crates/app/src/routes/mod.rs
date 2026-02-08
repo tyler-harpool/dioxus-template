@@ -1,26 +1,39 @@
 pub mod dashboard;
+pub mod login;
+pub mod not_found;
 pub mod products;
+pub mod register;
 pub mod settings;
 pub mod users;
 
+use crate::auth::use_auth;
 use crate::ProfileState;
 use dioxus::prelude::*;
+use shared_types::UserTier;
 use shared_ui::{
-    Avatar, AvatarFallback, DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-    DropdownMenuSeparator, DropdownMenuTrigger, Navbar, Separator, Sidebar, SidebarContent,
-    SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader,
-    SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarRail,
-    SidebarSeparator, SidebarTrigger, Switch, SwitchThumb,
+    Avatar, AvatarFallback, Badge, BadgeVariant, DropdownMenu, DropdownMenuContent,
+    DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Navbar, Separator, Sidebar,
+    SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
+    SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider,
+    SidebarRail, SidebarSeparator, SidebarTrigger, Switch, SwitchThumb,
 };
 
 use dashboard::Dashboard;
+use login::Login;
+use not_found::NotFound;
 use products::Products;
+use register::Register;
 use settings::Settings;
 use users::Users;
 
 /// Application routes.
 #[derive(Clone, Routable, Debug, PartialEq)]
 pub enum Route {
+    #[route("/login")]
+    Login {},
+    #[route("/register")]
+    Register {},
+    #[layout(AuthGuard)]
     #[layout(AppLayout)]
     #[route("/")]
     Dashboard {},
@@ -30,6 +43,27 @@ pub enum Route {
     Products {},
     #[route("/settings")]
     Settings {},
+    #[end_layout]
+    #[end_layout]
+    #[route("/:..route")]
+    NotFound { route: Vec<String> },
+}
+
+/// Auth guard layout — redirects to /login if not authenticated.
+#[component]
+fn AuthGuard() -> Element {
+    let auth = use_auth();
+
+    if !auth.is_authenticated() {
+        navigator().push(Route::Login {});
+        return rsx! {
+            div { class: "auth-guard-loading",
+                p { "Redirecting to login..." }
+            }
+        };
+    }
+
+    rsx! { Outlet::<Route> {} }
 }
 
 /// Main app layout with sidebar and top navbar.
@@ -37,6 +71,7 @@ pub enum Route {
 fn AppLayout() -> Element {
     let route: Route = use_route();
     let profile: ProfileState = use_context();
+    let mut auth = use_auth();
 
     let mut theme_state = use_context_provider(|| shared_ui::theme::ThemeState {
         family: Signal::new("cyberpunk".to_string()),
@@ -48,6 +83,8 @@ fn AppLayout() -> Element {
         Route::Users {} => "Users",
         Route::Products {} => "Products",
         Route::Settings {} => "Settings",
+        Route::Login {} | Route::Register {} => "Auth",
+        _ => "",
     };
 
     rsx! {
@@ -106,6 +143,7 @@ fn AppLayout() -> Element {
                 }
 
                 SidebarFooter {
+                    TierBadge {}
                     div {
                         class: "sidebar-footer-row",
                         span {
@@ -180,6 +218,19 @@ fn AppLayout() -> Element {
                                         "API Docs"
                                     }
                                 }
+                                DropdownMenuSeparator {}
+                                DropdownMenuItem::<String> {
+                                    value: "logout".to_string(),
+                                    index: 2usize,
+                                    on_select: move |_: String| {
+                                        spawn(async move {
+                                            let _ = server::api::logout().await;
+                                        });
+                                        auth.clear_auth();
+                                        navigator().push(Route::Login {});
+                                    },
+                                    "Sign Out"
+                                }
                             }
                         }
                     }
@@ -191,6 +242,32 @@ fn AppLayout() -> Element {
                     Outlet::<Route> {}
                 }
             }
+        }
+    }
+}
+
+/// Displays the current user's tier as a badge in the sidebar footer.
+#[component]
+fn TierBadge() -> Element {
+    let auth = use_auth();
+    let tier = use_memo(move || {
+        auth.current_user
+            .read()
+            .as_ref()
+            .map(|u| u.tier.clone())
+            .unwrap_or(UserTier::Free)
+    });
+
+    let (variant, label) = match tier() {
+        UserTier::Free => (BadgeVariant::Secondary, "FREE"),
+        UserTier::Premium => (BadgeVariant::Primary, "PREMIUM"),
+        UserTier::Elite => (BadgeVariant::Destructive, "ELITE"),
+    };
+
+    rsx! {
+        div { class: "sidebar-footer-row sidebar-tier-row",
+            span { class: "sidebar-footer-label", "Tier" }
+            Badge { variant: variant, "{label}" }
         }
     }
 }

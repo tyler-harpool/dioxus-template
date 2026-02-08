@@ -84,7 +84,17 @@
 
 @media (max-width: 768px) {
     .cyber-tooltip-content {
+        width: max-content;
+        min-width: min(200px, 85vw);
         max-width: 85vw;
         font-size: var(--font-size-xs);
+    }
+
+    /* Right-align tooltips on mobile to prevent viewport overflow */
+    .cyber-tooltip-content[data-side="top"],
+    .cyber-tooltip-content[data-side="bottom"] {
+        left: auto;
+        right: 0;
+        transform: none;
     }
 }

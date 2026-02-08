@@ -1,0 +1,112 @@
+.auth-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    padding: var(--spacing-lg);
+}
+
+.auth-page .card {
+    width: 100%;
+    max-width: 420px;
+}
+
+.auth-error {
+    background: var(--color-error-container, rgba(255, 0, 0, 0.1));
+    color: var(--color-error, #ff4444);
+    border: 1px solid var(--color-error, #ff4444);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-sm);
+}
+
+.auth-field {
+    margin-bottom: var(--spacing-md);
+}
+
+.auth-field .label {
+    margin-bottom: var(--spacing-xs);
+}
+
+.auth-field .input-wrapper {
+    width: 100%;
+}
+
+.auth-submit {
+    width: 100%;
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.auth-submit:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.auth-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-link {
+    text-align: center;
+    width: 100%;
+    margin: 0;
+    color: var(--color-on-surface-variant);
+    font-size: var(--font-size-sm);
+}
+
+.auth-link a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+/* OAuth buttons */
+.auth-oauth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.auth-oauth-btn {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Divider with "or" text */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.auth-divider .separator {
+    flex: 1;
+}
+
+.auth-divider-text {
+    color: var(--color-on-surface-variant);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+/* Loading state for auth guard */
+.auth-guard-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    color: var(--color-on-surface-variant);
+}

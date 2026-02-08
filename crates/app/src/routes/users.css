@@ -54,6 +54,22 @@
     white-space: nowrap;
 }
 
+/* Tier column (badge or admin select) */
+.user-tier {
+    flex-shrink: 0;
+}
+
+.user-tier .cyber-select {
+    min-width: 7rem;
+}
+
+.user-tier .cyber-select-trigger {
+    padding: 0.25rem 0.5rem;
+    font-size: var(--font-size-sm);
+    min-height: unset;
+    height: auto;
+}
+
 /* "..." action trigger in user rows */
 .user-row .cyber-popover-trigger {
     padding: 0.35rem 0.6rem;
@@ -114,6 +130,10 @@
 
     .user-info {
         flex: 1;
+    }
+
+    .user-tier {
+        display: none;
     }
 
     .dialog-form {

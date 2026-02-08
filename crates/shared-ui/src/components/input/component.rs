@@ -7,6 +7,7 @@ pub fn Input(
     #[props(default)] on_input: EventHandler<FormEvent>,
     #[props(default)] placeholder: String,
     #[props(default)] label: String,
+    #[props(default = "text".to_string())] input_type: String,
     #[props(default = false)] disabled: bool,
     #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
 ) -> Element {
@@ -20,7 +21,7 @@ pub fn Input(
                 label { class: "input-label", "{label}" }
             }
             input {
-                r#type: "text",
+                r#type: "{input_type}",
                 value: value,
                 placeholder: placeholder,
                 disabled: disabled,

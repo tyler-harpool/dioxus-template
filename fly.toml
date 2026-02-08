@@ -26,7 +26,7 @@ primary_region = 'dfw'
     timeout = '5s'
     grace_period = '10s'
     method = 'GET'
-    path = '/'
+    path = '/health'
 
 [[vm]]
   memory = '512mb'

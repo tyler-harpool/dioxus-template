@@ -8,3 +8,15 @@ pub mod rest;
 
 #[cfg(feature = "server")]
 pub mod openapi;
+
+#[cfg(feature = "server")]
+pub mod error_convert;
+
+#[cfg(feature = "server")]
+pub mod telemetry;
+
+#[cfg(feature = "server")]
+pub mod health;
+
+#[cfg(feature = "server")]
+pub mod auth;
