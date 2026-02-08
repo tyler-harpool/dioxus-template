@@ -9,9 +9,9 @@ use shared_ui::{
     CalendarNavigation, CalendarNextMonthButton, CalendarPreviousMonthButton, CalendarSelectMonth,
     CalendarSelectYear, Collapsible, CollapsibleContent, CollapsibleTrigger, Date, Form, Input,
     Label, MenubarContent, MenubarItem, MenubarMenu, MenubarRoot, MenubarSeparator, MenubarTrigger,
-    SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValue, Separator, Sheet, SheetClose,
-    SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetSide, SheetTitle, Switch,
-    SwitchThumb, Textarea, ToastOptions, Toggle, UtcDateTime,
+    SelectContent, SelectItem, SelectRoot, SelectTrigger, SelectValue, Separator, Sheet,
+    SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetSide, SheetTitle,
+    Switch, SwitchThumb, Textarea, ToastOptions, Toggle, UtcDateTime,
 };
 
 /// Settings page with menubar navigation, accordion sections, and advanced collapsible.
@@ -32,7 +32,7 @@ pub fn Settings() -> Element {
     let mut saving = use_signal(|| false);
     let mut profile_error = use_signal(|| Option::<String>::None);
     let mut profile_field_errors =
-        use_signal(|| std::collections::HashMap::<String, String>::new());
+        use_signal(std::collections::HashMap::<String, String>::new);
 
     // Avatar upload state
     let mut uploading_avatar = use_signal(|| false);
