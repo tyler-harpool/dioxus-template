@@ -18,10 +18,14 @@ const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Set up the OpenTelemetry TracerProvider and register it globally.
 ///
-/// Must be called inside a Tokio runtime (the batch exporter spawns a
-/// background flush task). Reads config from environment:
-///   - `OTEL_EXPORTER_OTLP_ENDPOINT` — collector gRPC address (e.g. `http://localhost:4317`)
+/// Must be called inside a Tokio runtime (the tonic exporter needs it).
+/// Reads config from environment:
+///   - `OTEL_EXPORTER_OTLP_ENDPOINT` — collector gRPC address
+///       Local: `http://localhost:4317`
+///       SigNoz Cloud: `https://ingest.{region}.signoz.cloud:443`
 ///   - `OTEL_SERVICE_NAME` — service name tag (default: `dioxus-app`)
+///   - `SIGNOZ_INGESTION_KEY` — SigNoz Cloud access token (optional for local)
+///   - `DEPLOY_ENV` — deployment environment tag (default: `development`)
 pub fn init_telemetry() {
     let _ = dotenvy::dotenv();
 
@@ -37,11 +41,25 @@ pub fn init_telemetry() {
         std::env::var("OTEL_SERVICE_NAME").unwrap_or_else(|_| "dioxus-app".to_string());
     let environment = std::env::var("DEPLOY_ENV").unwrap_or_else(|_| "development".to_string());
 
-    let exporter = opentelemetry_otlp::SpanExporter::builder()
+    // Build the OTLP exporter with optional SigNoz Cloud ingestion key
+    let mut builder = opentelemetry_otlp::SpanExporter::builder()
         .with_tonic()
-        .with_endpoint(&endpoint)
-        .build()
-        .expect("Failed to create OTLP exporter");
+        .with_endpoint(&endpoint);
+
+    // Attach SigNoz Cloud ingestion key as gRPC metadata when present
+    if let Ok(key) = std::env::var("SIGNOZ_INGESTION_KEY") {
+        if !key.is_empty() {
+            use opentelemetry_otlp::WithTonicConfig;
+            let mut metadata = opentelemetry_otlp::tonic_types::metadata::MetadataMap::new();
+            metadata.insert(
+                "signoz-ingestion-key",
+                key.parse().expect("Invalid SIGNOZ_INGESTION_KEY value"),
+            );
+            builder = builder.with_metadata(metadata);
+        }
+    }
+
+    let exporter = builder.build().expect("Failed to create OTLP exporter");
 
     let resource = opentelemetry_sdk::Resource::builder()
         .with_service_name(service_name)
@@ -56,7 +74,15 @@ pub fn init_telemetry() {
 
     global::set_tracer_provider(provider);
 
-    eprintln!("Telemetry initialized v{APP_VERSION} — exporting to {endpoint}");
+    let mode = if std::env::var("SIGNOZ_INGESTION_KEY")
+        .map(|k| !k.is_empty())
+        .unwrap_or(false)
+    {
+        "cloud"
+    } else {
+        "local"
+    };
+    eprintln!("Telemetry initialized v{APP_VERSION} — exporting to {endpoint} ({mode})");
 }
 
 /// Detect client platform from User-Agent and optional X-Client-Platform header.

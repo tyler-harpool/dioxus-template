@@ -7,11 +7,12 @@ use auth::{use_auth, AuthState};
 use routes::Route;
 
 /// Shared profile state accessible across all routes.
-#[derive(Clone, Debug, PartialEq)]
+/// Backed by `Memo`s that read directly from `AuthState` — always in sync.
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ProfileState {
-    pub display_name: Signal<String>,
-    pub email: Signal<String>,
-    pub avatar_url: Signal<Option<String>>,
+    pub display_name: Memo<String>,
+    pub email: Memo<String>,
+    pub avatar_url: Memo<Option<String>>,
 }
 
 const CYBERPUNK_THEME: Asset = asset!("/assets/cyberpunk-theme.css");
@@ -99,17 +100,9 @@ fn App() -> Element {
     });
 
     use_context_provider(|| ProfileState {
-        display_name: Signal::new(display_name()),
-        email: Signal::new(email()),
-        avatar_url: Signal::new(avatar_url()),
-    });
-
-    // Keep profile in sync when auth changes
-    let mut profile: ProfileState = use_context();
-    use_effect(move || {
-        profile.display_name.set(display_name());
-        profile.email.set(email());
-        profile.avatar_url.set(avatar_url());
+        display_name,
+        email,
+        avatar_url,
     });
 
     rsx! {

@@ -25,8 +25,9 @@ pub fn Settings() -> Element {
 
     // Profile state (shared with layout via context)
     let profile: ProfileState = use_context();
-    let mut profile_name = profile.display_name;
-    let mut profile_email = profile.email;
+    // Local editable signals for form fields, initialized from profile memos
+    let mut profile_name = use_signal(move || (profile.display_name)());
+    let mut profile_email = use_signal(move || (profile.email)());
 
     // Profile save state
     let mut saving = use_signal(|| false);
