@@ -48,10 +48,12 @@ pub fn init_telemetry() {
         .with_tonic()
         .with_endpoint(&endpoint);
 
-    // Enable TLS for HTTPS endpoints (e.g. SigNoz Cloud)
+    // Enable TLS with system root certs for HTTPS endpoints (e.g. SigNoz Cloud)
     if endpoint.starts_with("https://") {
-        builder = builder
-            .with_tls_config(opentelemetry_otlp::tonic_types::transport::ClientTlsConfig::new());
+        builder = builder.with_tls_config(
+            opentelemetry_otlp::tonic_types::transport::ClientTlsConfig::new()
+                .with_native_roots(),
+        );
     }
 
     // Attach SigNoz Cloud ingestion key as gRPC metadata when present
