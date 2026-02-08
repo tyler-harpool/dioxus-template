@@ -9,9 +9,7 @@ pub mod users;
 use crate::auth::use_auth;
 use crate::ProfileState;
 use dioxus::prelude::*;
-use dioxus_free_icons::icons::ld_icons::{
-    LdLayoutDashboard, LdPackage, LdSettings, LdUsers,
-};
+use dioxus_free_icons::icons::ld_icons::{LdLayoutDashboard, LdPackage, LdSettings, LdUsers};
 use dioxus_free_icons::Icon;
 use shared_types::UserTier;
 use shared_ui::{

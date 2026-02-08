@@ -9,8 +9,7 @@ mod common;
 
 use axum::http::StatusCode;
 use common::{
-    get, post_json, post_json_with_auth, put_json_with_auth, register_test_user,
-    test_app_with_auth,
+    get, post_json, post_json_with_auth, put_json_with_auth, register_test_user, test_app_with_auth,
 };
 use shared_types::{AppError, AuthResponse};
 
@@ -33,8 +32,7 @@ async fn register_via_rest_creates_user() {
     let app = test_app_with_auth().await;
     let (username, email) = unique_suffix("reg");
 
-    let (status, body) =
-        register_test_user(&app, &username, &email, "StrongPass123!").await;
+    let (status, body) = register_test_user(&app, &username, &email, "StrongPass123!").await;
 
     assert_eq!(status, StatusCode::CREATED);
     let resp: AuthResponse = serde_json::from_str(&body).unwrap();
@@ -55,8 +53,7 @@ async fn login_via_rest_returns_tokens() {
         "email": email,
         "password": "MyPass99!"
     });
-    let (status, body) =
-        post_json(&app, "/api/auth/login", &login_json.to_string()).await;
+    let (status, body) = post_json(&app, "/api/auth/login", &login_json.to_string()).await;
 
     assert_eq!(status, StatusCode::OK);
     let resp: AuthResponse = serde_json::from_str(&body).unwrap();
@@ -75,8 +72,7 @@ async fn login_wrong_password_returns_401() {
         "email": email,
         "password": "WrongPass!"
     });
-    let (status, body) =
-        post_json(&app, "/api/auth/login", &login_json.to_string()).await;
+    let (status, body) = post_json(&app, "/api/auth/login", &login_json.to_string()).await;
 
     assert_eq!(status, StatusCode::UNAUTHORIZED);
     let err: AppError = serde_json::from_str(&body).unwrap();
@@ -91,8 +87,7 @@ async fn login_nonexistent_email_returns_401() {
         "email": "nobody_here@nonexistent.com",
         "password": "anything"
     });
-    let (status, _) =
-        post_json(&app, "/api/auth/login", &login_json.to_string()).await;
+    let (status, _) = post_json(&app, "/api/auth/login", &login_json.to_string()).await;
 
     assert_eq!(status, StatusCode::UNAUTHORIZED);
 }
@@ -104,13 +99,11 @@ async fn register_duplicate_email_returns_error() {
     let (username2, _) = unique_suffix("dupe2");
 
     // First registration succeeds
-    let (status, _) =
-        register_test_user(&app, &username1, &email, "Pass1234!").await;
+    let (status, _) = register_test_user(&app, &username1, &email, "Pass1234!").await;
     assert_eq!(status, StatusCode::CREATED);
 
     // Second registration with same email fails
-    let (status, _) =
-        register_test_user(&app, &username2, &email, "Pass5678!").await;
+    let (status, _) = register_test_user(&app, &username2, &email, "Pass5678!").await;
     assert_eq!(status, StatusCode::INTERNAL_SERVER_ERROR);
 }
 
@@ -120,13 +113,11 @@ async fn logout_returns_ok() {
     let (username, email) = unique_suffix("logout");
 
     // Register to get a token
-    let (_, body) =
-        register_test_user(&app, &username, &email, "LogoutPass1!").await;
+    let (_, body) = register_test_user(&app, &username, &email, "LogoutPass1!").await;
     let resp: AuthResponse = serde_json::from_str(&body).unwrap();
 
     // Logout with Bearer token
-    let (status, _) =
-        post_json_with_auth(&app, "/api/auth/logout", "{}", &resp.access_token).await;
+    let (status, _) = post_json_with_auth(&app, "/api/auth/logout", "{}", &resp.access_token).await;
     assert_eq!(status, StatusCode::NO_CONTENT);
 }
 
@@ -151,8 +142,7 @@ async fn update_tier_non_admin_returns_403() {
     let (username, email) = unique_suffix("tieruser");
 
     // Register a regular (non-admin) user
-    let (_, body) =
-        register_test_user(&app, &username, &email, "TierPass1!").await;
+    let (_, body) = register_test_user(&app, &username, &email, "TierPass1!").await;
     let resp: AuthResponse = serde_json::from_str(&body).unwrap();
 
     // Try to update tier — should be forbidden since user role is "user", not "admin"

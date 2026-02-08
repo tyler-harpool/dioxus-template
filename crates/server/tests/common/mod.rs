@@ -1,8 +1,7 @@
 use axum::{
     body::Body,
     http::{Request, StatusCode},
-    middleware,
-    Router,
+    middleware, Router,
 };
 use server::db::AppState;
 use tower::ServiceExt;

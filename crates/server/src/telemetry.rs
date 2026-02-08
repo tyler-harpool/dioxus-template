@@ -35,8 +35,7 @@ pub fn init_telemetry() {
 
     let service_name =
         std::env::var("OTEL_SERVICE_NAME").unwrap_or_else(|_| "dioxus-app".to_string());
-    let environment =
-        std::env::var("DEPLOY_ENV").unwrap_or_else(|_| "development".to_string());
+    let environment = std::env::var("DEPLOY_ENV").unwrap_or_else(|_| "development".to_string());
 
     let exporter = opentelemetry_otlp::SpanExporter::builder()
         .with_tonic()
@@ -196,10 +195,7 @@ where
 
             let span = cx.span();
             let status = response.status();
-            span.set_attribute(KeyValue::new(
-                "http.status_code",
-                status.as_u16() as i64,
-            ));
+            span.set_attribute(KeyValue::new("http.status_code", status.as_u16() as i64));
 
             if status.is_server_error() {
                 span.set_status(opentelemetry::trace::Status::error(status.to_string()));

@@ -72,20 +72,45 @@ pub async fn ensure_bucket() {
         tracing::info!("S3 bucket '{}' already exists", bucket);
     }
 
-    // Set public-read policy so avatar URLs are accessible from the browser
-    let policy = format!(
-        r#"{{"Version":"2012-10-17","Statement":[{{"Effect":"Allow","Principal":"*","Action":["s3:GetObject"],"Resource":["arn:aws:s3:::{}/*"]}}]}}"#,
-        bucket
-    );
-    match client
-        .put_bucket_policy()
-        .bucket(&bucket)
-        .policy(&policy)
-        .send()
-        .await
-    {
-        Ok(_) => tracing::info!("Public-read policy applied to '{}'", bucket),
-        Err(e) => tracing::warn!("Failed to set bucket policy on '{}': {}", bucket, e),
+    // Set public-read policy so avatar URLs are accessible from the browser.
+    // Tigris manages public access via `fly storage update --public` instead of S3 bucket policies,
+    // so we only apply the policy on non-Tigris providers (e.g. MinIO).
+    let ep = endpoint();
+    if !ep.contains("tigris") {
+        let policy = format!(
+            r#"{{"Version":"2012-10-17","Statement":[{{"Effect":"Allow","Principal":"*","Action":["s3:GetObject"],"Resource":["arn:aws:s3:::{}/*"]}}]}}"#,
+            bucket
+        );
+        match client
+            .put_bucket_policy()
+            .bucket(&bucket)
+            .policy(&policy)
+            .send()
+            .await
+        {
+            Ok(_) => tracing::info!("Public-read policy applied to '{}'", bucket),
+            Err(e) => tracing::warn!("Failed to set bucket policy on '{}': {}", bucket, e),
+        }
+    }
+}
+
+/// Build the public URL for an object.
+///
+/// Tigris uses virtual-hosted style: `https://{bucket}.fly.storage.tigris.dev/{key}`
+/// MinIO uses path style: `http://localhost:9000/{bucket}/{key}`
+///
+/// We detect Tigris by checking if the endpoint contains `tigris`.
+fn public_url(bucket: &str, key: &str) -> String {
+    let endpoint = endpoint();
+    if endpoint.contains("tigris") {
+        // Virtual-hosted style for Tigris
+        let host = endpoint
+            .trim_start_matches("https://")
+            .trim_start_matches("http://");
+        format!("https://{}.{}/{}", bucket, host, key)
+    } else {
+        // Path style for MinIO / generic S3
+        format!("{}/{}/{}", endpoint, bucket, key)
     }
 }
 
@@ -98,7 +123,6 @@ pub async fn upload_avatar(
     bytes: &[u8],
 ) -> Result<String, String> {
     let bucket = bucket_name();
-    let endpoint = endpoint();
 
     let ext = match content_type {
         "image/jpeg" => "jpg",
@@ -121,6 +145,5 @@ pub async fn upload_avatar(
         .await
         .map_err(|e| format!("S3 upload failed: {}", e))?;
 
-    let url = format!("{}/{}/{}", endpoint, bucket, key);
-    Ok(url)
+    Ok(public_url(&bucket, &key))
 }

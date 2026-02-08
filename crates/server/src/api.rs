@@ -699,14 +699,11 @@ pub async fn upload_user_avatar(
         .into_server_fn_error());
     }
 
-    let bytes = base64::Engine::decode(
-        &base64::engine::general_purpose::STANDARD,
-        &file_data,
-    )
-    .map_err(|e| {
-        AppError::validation(format!("Invalid file data: {}", e), Default::default())
-            .into_server_fn_error()
-    })?;
+    let bytes = base64::Engine::decode(&base64::engine::general_purpose::STANDARD, &file_data)
+        .map_err(|e| {
+            AppError::validation(format!("Invalid file data: {}", e), Default::default())
+                .into_server_fn_error()
+        })?;
 
     if bytes.len() > 2 * 1024 * 1024 {
         return Err(

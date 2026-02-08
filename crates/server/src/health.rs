@@ -30,9 +30,7 @@ pub struct HealthResponse {
     ),
     tag = "health"
 )]
-pub async fn health_check(
-    State(pool): State<Pool<Postgres>>,
-) -> Json<HealthResponse> {
+pub async fn health_check(State(pool): State<Pool<Postgres>>) -> Json<HealthResponse> {
     let db_status = match sqlx::query_scalar::<_, i32>("SELECT 1")
         .fetch_one(&pool)
         .await

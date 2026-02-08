@@ -27,9 +27,7 @@ use crate::error_convert::{SqlxErrorExt, ValidateRequest};
     tag = "users"
 )]
 #[tracing::instrument(skip(pool))]
-pub async fn list_users(
-    State(pool): State<Pool<Postgres>>,
-) -> Result<Json<Vec<User>>, AppError> {
+pub async fn list_users(State(pool): State<Pool<Postgres>>) -> Result<Json<Vec<User>>, AppError> {
     let users = sqlx::query_as!(
         User,
         "SELECT id, username, display_name, role, tier FROM users"
@@ -389,8 +387,8 @@ pub async fn register(
     State(pool): State<Pool<Postgres>>,
     Json(payload): Json<RegisterRequest>,
 ) -> Result<(StatusCode, Json<AuthResponse>), AppError> {
-    let password_hash = pw::hash_password(&payload.password)
-        .map_err(|e| AppError::internal(e.to_string()))?;
+    let password_hash =
+        pw::hash_password(&payload.password).map_err(|e| AppError::internal(e.to_string()))?;
 
     let user = sqlx::query!(
         "INSERT INTO users (username, email, password_hash, display_name) VALUES ($1, $2, $3, $4) RETURNING id, username, display_name, email, role, tier, avatar_url",
@@ -655,9 +653,8 @@ pub async fn upload_avatar(
         break;
     }
 
-    let bytes = file_bytes.ok_or_else(|| {
-        AppError::validation("No file provided", Default::default())
-    })?;
+    let bytes =
+        file_bytes.ok_or_else(|| AppError::validation("No file provided", Default::default()))?;
     let ct = content_type.unwrap_or_default();
 
     let avatar_url = crate::s3::upload_avatar(auth.0.sub, &ct, &bytes)

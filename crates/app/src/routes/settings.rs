@@ -31,8 +31,7 @@ pub fn Settings() -> Element {
     // Profile save state
     let mut saving = use_signal(|| false);
     let mut profile_error = use_signal(|| Option::<String>::None);
-    let mut profile_field_errors =
-        use_signal(std::collections::HashMap::<String, String>::new);
+    let mut profile_field_errors = use_signal(std::collections::HashMap::<String, String>::new);
 
     // Avatar upload state
     let mut uploading_avatar = use_signal(|| false);
