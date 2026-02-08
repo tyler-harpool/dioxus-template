@@ -42,14 +42,21 @@ pub fn init_telemetry() {
     let environment = std::env::var("DEPLOY_ENV").unwrap_or_else(|_| "development".to_string());
 
     // Build the OTLP exporter with optional SigNoz Cloud ingestion key
+    use opentelemetry_otlp::WithTonicConfig;
+
     let mut builder = opentelemetry_otlp::SpanExporter::builder()
         .with_tonic()
         .with_endpoint(&endpoint);
 
+    // Enable TLS for HTTPS endpoints (e.g. SigNoz Cloud)
+    if endpoint.starts_with("https://") {
+        builder = builder
+            .with_tls_config(opentelemetry_otlp::tonic_types::transport::ClientTlsConfig::new());
+    }
+
     // Attach SigNoz Cloud ingestion key as gRPC metadata when present
     if let Ok(key) = std::env::var("SIGNOZ_INGESTION_KEY") {
         if !key.is_empty() {
-            use opentelemetry_otlp::WithTonicConfig;
             let mut metadata = opentelemetry_otlp::tonic_types::metadata::MetadataMap::new();
             metadata.insert(
                 "signoz-ingestion-key",
