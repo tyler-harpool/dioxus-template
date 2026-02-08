@@ -114,18 +114,44 @@ pub struct DashboardStats {
 /// Login request.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "openapi", derive(utoipa::ToSchema))]
+#[cfg_attr(feature = "validation", derive(validator::Validate))]
 pub struct LoginRequest {
+    #[cfg_attr(
+        feature = "validation",
+        validate(email(message = "Valid email is required"))
+    )]
     pub email: String,
+    #[cfg_attr(
+        feature = "validation",
+        validate(length(min = 8, message = "Password must be at least 8 characters"))
+    )]
     pub password: String,
 }
 
 /// Register request.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "openapi", derive(utoipa::ToSchema))]
+#[cfg_attr(feature = "validation", derive(validator::Validate))]
 pub struct RegisterRequest {
+    #[cfg_attr(
+        feature = "validation",
+        validate(length(min = 3, message = "Username must be at least 3 characters"))
+    )]
     pub username: String,
+    #[cfg_attr(
+        feature = "validation",
+        validate(email(message = "Valid email is required"))
+    )]
     pub email: String,
+    #[cfg_attr(
+        feature = "validation",
+        validate(length(min = 8, message = "Password must be at least 8 characters"))
+    )]
     pub password: String,
+    #[cfg_attr(
+        feature = "validation",
+        validate(length(min = 1, message = "Display name is required"))
+    )]
     pub display_name: String,
 }
 
@@ -215,5 +241,79 @@ mod tests {
         let deserialized: Product = serde_json::from_str(&json).unwrap();
 
         assert_eq!(product, deserialized);
+    }
+
+    #[test]
+    fn user_tier_has_access_same_tier() {
+        assert!(UserTier::Free.has_access(&UserTier::Free));
+        assert!(UserTier::Premium.has_access(&UserTier::Premium));
+        assert!(UserTier::Elite.has_access(&UserTier::Elite));
+    }
+
+    #[test]
+    fn user_tier_has_access_higher_tier() {
+        assert!(UserTier::Premium.has_access(&UserTier::Free));
+        assert!(UserTier::Elite.has_access(&UserTier::Free));
+        assert!(UserTier::Elite.has_access(&UserTier::Premium));
+    }
+
+    #[test]
+    fn user_tier_denies_lower_tier() {
+        assert!(!UserTier::Free.has_access(&UserTier::Premium));
+        assert!(!UserTier::Free.has_access(&UserTier::Elite));
+        assert!(!UserTier::Premium.has_access(&UserTier::Elite));
+    }
+
+    #[test]
+    fn user_tier_from_str_or_default_known_values() {
+        assert_eq!(UserTier::from_str_or_default("premium"), UserTier::Premium);
+        assert_eq!(UserTier::from_str_or_default("Premium"), UserTier::Premium);
+        assert_eq!(UserTier::from_str_or_default("PREMIUM"), UserTier::Premium);
+        assert_eq!(UserTier::from_str_or_default("elite"), UserTier::Elite);
+        assert_eq!(UserTier::from_str_or_default("Elite"), UserTier::Elite);
+        assert_eq!(UserTier::from_str_or_default("free"), UserTier::Free);
+    }
+
+    #[test]
+    fn user_tier_from_str_or_default_unknown_falls_to_free() {
+        assert_eq!(UserTier::from_str_or_default(""), UserTier::Free);
+        assert_eq!(UserTier::from_str_or_default("gold"), UserTier::Free);
+        assert_eq!(UserTier::from_str_or_default("invalid"), UserTier::Free);
+    }
+
+    #[test]
+    fn user_tier_as_str_roundtrip() {
+        for tier in [UserTier::Free, UserTier::Premium, UserTier::Elite] {
+            let s = tier.as_str();
+            let parsed = UserTier::from_str_or_default(s);
+            assert_eq!(tier, parsed);
+        }
+    }
+
+    #[test]
+    fn oauth_provider_parse_valid() {
+        assert_eq!(
+            OAuthProvider::parse_provider("google"),
+            Some(OAuthProvider::Google)
+        );
+        assert_eq!(
+            OAuthProvider::parse_provider("Google"),
+            Some(OAuthProvider::Google)
+        );
+        assert_eq!(
+            OAuthProvider::parse_provider("github"),
+            Some(OAuthProvider::GitHub)
+        );
+        assert_eq!(
+            OAuthProvider::parse_provider("GitHub"),
+            Some(OAuthProvider::GitHub)
+        );
+    }
+
+    #[test]
+    fn oauth_provider_parse_invalid_returns_none() {
+        assert_eq!(OAuthProvider::parse_provider("facebook"), None);
+        assert_eq!(OAuthProvider::parse_provider(""), None);
+        assert_eq!(OAuthProvider::parse_provider("twitter"), None);
     }
 }

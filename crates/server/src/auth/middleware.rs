@@ -1,8 +1,10 @@
-use axum::{extract::Request, middleware::Next, response::Response};
+use axum::extract::{Request, State};
+use axum::middleware::Next;
+use axum::response::Response;
+use sqlx::{Pool, Postgres};
 
 use super::cookies::{self, CookieSlot, PendingCookieAction};
 use super::jwt::{self, validate_access_token};
-use crate::db::get_db;
 
 /// Permissive auth middleware that handles authentication and cookie management.
 ///
@@ -13,7 +15,11 @@ use crate::db::get_db;
 /// 4. After the handler runs, applies any pending cookie actions to the response
 ///
 /// Does NOT reject unauthenticated requests — downstream handlers decide authorization.
-pub async fn auth_middleware(mut req: Request, next: Next) -> Response {
+pub async fn auth_middleware(
+    State(pool): State<Pool<Postgres>>,
+    mut req: Request,
+    next: Next,
+) -> Response {
     let headers = req.headers().clone();
     let mut refresh_cookies: Option<(String, String)> = None;
 
@@ -27,7 +33,7 @@ pub async fn auth_middleware(mut req: Request, next: Next) -> Response {
                 // Access token invalid/expired — try transparent refresh
                 if let Some(refresh_token) = cookies::extract_refresh_token(&headers) {
                     if let Some((new_access, new_refresh)) =
-                        try_transparent_refresh(&refresh_token, &mut req).await
+                        try_transparent_refresh(&pool, &refresh_token, &mut req).await
                     {
                         refresh_cookies = Some((new_access, new_refresh));
                     }
@@ -69,12 +75,11 @@ pub async fn auth_middleware(mut req: Request, next: Next) -> Response {
 /// On success: inserts new Claims into request extensions and returns
 /// the new token pair for the middleware to set as cookies.
 async fn try_transparent_refresh(
+    pool: &Pool<Postgres>,
     refresh_token: &str,
     req: &mut Request,
 ) -> Option<(String, String)> {
     let claims = validate_access_token(refresh_token).ok()?;
-
-    let db = get_db().await;
 
     // Verify token exists and is not revoked
     let stored = sqlx::query!(
@@ -82,7 +87,7 @@ async fn try_transparent_refresh(
         refresh_token,
         claims.sub
     )
-    .fetch_optional(db)
+    .fetch_optional(pool)
     .await
     .ok()
     .flatten()?;
@@ -96,7 +101,7 @@ async fn try_transparent_refresh(
         "UPDATE refresh_tokens SET revoked = TRUE WHERE id = $1",
         stored.id
     )
-    .execute(db)
+    .execute(pool)
     .await;
 
     // Issue new tokens
@@ -112,7 +117,7 @@ async fn try_transparent_refresh(
         new_refresh,
         expires_at
     )
-    .execute(db)
+    .execute(pool)
     .await;
 
     // Validate the new access token to get fresh claims

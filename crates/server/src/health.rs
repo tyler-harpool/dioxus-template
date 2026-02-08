@@ -1,9 +1,9 @@
+use axum::extract::State;
 use axum::Json;
 use serde::Serialize;
+use sqlx::{Pool, Postgres};
 use std::sync::OnceLock;
 use std::time::Instant;
-
-use crate::db::get_db;
 
 static START_TIME: OnceLock<Instant> = OnceLock::new();
 
@@ -30,9 +30,11 @@ pub struct HealthResponse {
     ),
     tag = "health"
 )]
-pub async fn health_check() -> Json<HealthResponse> {
+pub async fn health_check(
+    State(pool): State<Pool<Postgres>>,
+) -> Json<HealthResponse> {
     let db_status = match sqlx::query_scalar::<_, i32>("SELECT 1")
-        .fetch_one(get_db().await)
+        .fetch_one(&pool)
         .await
     {
         Ok(_) => "connected".to_string(),

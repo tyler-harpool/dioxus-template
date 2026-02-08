@@ -1,5 +1,7 @@
 use crate::auth::use_is_admin;
 use dioxus::prelude::*;
+use dioxus_free_icons::icons::ld_icons::LdEllipsis;
+use dioxus_free_icons::Icon;
 use server::api::{create_user, delete_user, list_users, update_user, update_user_tier};
 use shared_types::User;
 use shared_ui::{
@@ -284,7 +286,7 @@ pub fn Users() -> Element {
 
                                                     PopoverRoot {
                                                         PopoverTrigger {
-                                                            "\u{2026}"
+                                                            Icon::<LdEllipsis> { icon: LdEllipsis, width: 18, height: 18 }
                                                         }
                                                         PopoverContent {
                                                         align: ContentAlign::End,

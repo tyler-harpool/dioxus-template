@@ -77,47 +77,97 @@ This will:
 Then start the dev server:
 
 ```bash
-make dev
+make web
 ```
 
 The app will be available at the URL printed in the terminal (typically `http://127.0.0.1:8080`).
 
 ## Make Targets
 
-| Command              | Description                                       |
-| -------------------- | ------------------------------------------------- |
-| `make setup`         | Full local dev setup (one command)                 |
-| `make db-up`         | Start PostgreSQL                                   |
-| `make db-down`       | Stop PostgreSQL                                    |
-| `make db-reset`      | Drop, recreate, and migrate the database           |
-| `make migrate`       | Run sqlx migrations                                |
-| `make sqlx-prepare`  | Regenerate `.sqlx` offline query cache             |
-| `make dev`           | Start the Dioxus dev server                        |
-| `make build`         | Bundle for release                                 |
-| `make check`         | Cargo check (workspace)                            |
-| `make check-server`  | Cargo check with server features                   |
-| `make test`          | Run all tests                                      |
-| `make fmt`           | Format code                                        |
-| `make clippy`        | Run clippy lints                                   |
+### Local Dev Setup
+
+| Command              | Description                                                |
+| -------------------- | ---------------------------------------------------------- |
+| `make setup`         | Full local dev setup (.env, Postgres, migrations, sqlx)    |
+| `make env-file`      | Create `.env` from `.env.example` (skips if exists)        |
+
+### Database
+
+| Command              | Description                                                |
+| -------------------- | ---------------------------------------------------------- |
+| `make db-up`         | Start PostgreSQL via Docker Compose                        |
+| `make db-down`       | Stop all Compose services                                  |
+| `make db-wait`       | Wait for Postgres to accept connections                    |
+| `make db-reset`      | Drop, recreate, and migrate the database                   |
+| `make migrate`       | Run sqlx migrations                                        |
+| `make sqlx-prepare`  | Regenerate `.sqlx` offline query cache                     |
+
+### Services
+
+| Command              | Description                                                |
+| -------------------- | ---------------------------------------------------------- |
+| `make services`      | Start all services (Postgres + MinIO + SigNoz)             |
+| `make services-down` | Stop all services                                          |
+| `make minio-up`      | Start MinIO (S3-compatible object storage)                 |
+| `make minio-init`    | Start MinIO and create the avatars bucket                  |
+| `make signoz-up`     | Start SigNoz (dashboard at `http://localhost:3301`)        |
+| `make signoz-down`   | Stop SigNoz                                                |
+
+### Dev Servers
+
+| Command              | Description                                                |
+| -------------------- | ---------------------------------------------------------- |
+| `make web`           | Start the Dioxus web dev server (fullstack)                |
+| `make desktop`       | Start the Dioxus desktop dev server                        |
+| `make mobile`        | Start the Dioxus mobile dev server (iOS simulator)         |
+| `make build`         | Bundle for release                                         |
+
+### Build & Lint
+
+| Command              | Description                                                |
+| -------------------- | ---------------------------------------------------------- |
+| `make check`         | Cargo check (workspace, no server features)                |
+| `make check-server`  | Cargo check with server features (requires DATABASE_URL)   |
+| `make check-platforms` | Check all platform feature flags (web, desktop, mobile, server) |
+| `make fmt`           | Format all code                                            |
+| `make clippy`        | Run clippy lints                                           |
+| `make test`          | Run all tests                                              |
+
+### CI/CD & Deployment
+
+| Command              | Description                                                |
+| -------------------- | ---------------------------------------------------------- |
+| `make ci`            | Run full CI checks (fmt, check, clippy, test, sqlx)        |
+| `make deploy`        | Full deploy pipeline (CI + push + Fly.io)                  |
+| `make git-push`      | Git add, commit, and push (prompts for message)            |
+| `make fly-secrets`   | Sync `.env.production` secrets to Fly.io                   |
+| `make fly-deploy`    | Deploy to Fly.io                                           |
+| `make promote-user`  | Promote a user to admin (`EMAIL=user@example.com`)         |
 
 ## API Documentation
 
-Once the dev server is running (`make dev`), navigate to `/docs` for the interactive Swagger UI where you can browse and test all API endpoints.
+Once the dev server is running (`make web`), navigate to `/docs` for the interactive Scalar UI where you can browse and test all API endpoints.
 
 ### REST Endpoints
 
-| Method   | Path                      | Description             |
-| -------- | ------------------------- | ----------------------- |
-| `GET`    | `/api/users`              | List all users          |
-| `GET`    | `/api/users/{user_id}`    | Get user by ID          |
-| `POST`   | `/api/users`              | Create a user           |
-| `PUT`    | `/api/users/{user_id}`    | Update a user           |
-| `DELETE` | `/api/users/{user_id}`    | Delete a user           |
-| `GET`    | `/api/products`           | List all products       |
-| `POST`   | `/api/products`           | Create a product        |
-| `PUT`    | `/api/products/{id}`      | Update a product        |
-| `DELETE` | `/api/products/{id}`      | Delete a product        |
-| `GET`    | `/api/dashboard/stats`    | Dashboard statistics    |
+| Method   | Path                        | Description               |
+| -------- | --------------------------- | ------------------------- |
+| `POST`   | `/api/auth/register`        | Register a new user       |
+| `POST`   | `/api/auth/login`           | Login with email/password |
+| `POST`   | `/api/auth/logout`          | Logout (revoke tokens)    |
+| `GET`    | `/api/users`                | List all users            |
+| `GET`    | `/api/users/{user_id}`      | Get user by ID            |
+| `POST`   | `/api/users`                | Create a user             |
+| `PUT`    | `/api/users/{user_id}`      | Update a user             |
+| `DELETE` | `/api/users/{user_id}`      | Delete a user             |
+| `PUT`    | `/api/users/{user_id}/tier` | Update user tier (admin)  |
+| `POST`   | `/api/users/me/avatar`      | Upload avatar (multipart) |
+| `GET`    | `/api/products`             | List all products         |
+| `POST`   | `/api/products`             | Create a product          |
+| `PUT`    | `/api/products/{id}`        | Update a product          |
+| `DELETE` | `/api/products/{id}`        | Delete a product          |
+| `GET`    | `/api/dashboard/stats`      | Dashboard statistics      |
+| `GET`    | `/health`                   | Health check              |
 
 ## Theming
 

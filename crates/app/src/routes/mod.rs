@@ -9,9 +9,13 @@ pub mod users;
 use crate::auth::use_auth;
 use crate::ProfileState;
 use dioxus::prelude::*;
+use dioxus_free_icons::icons::ld_icons::{
+    LdLayoutDashboard, LdPackage, LdSettings, LdUsers,
+};
+use dioxus_free_icons::Icon;
 use shared_types::UserTier;
 use shared_ui::{
-    Avatar, AvatarFallback, Badge, BadgeVariant, DropdownMenu, DropdownMenuContent,
+    Avatar, AvatarFallback, AvatarImage, Badge, BadgeVariant, DropdownMenu, DropdownMenuContent,
     DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Navbar, Separator, Sidebar,
     SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
     SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider,
@@ -112,6 +116,7 @@ fn AppLayout() -> Element {
                                 SidebarMenuItem {
                                     Link { to: Route::Dashboard {},
                                         SidebarMenuButton { active: matches!(route, Route::Dashboard {}),
+                                            Icon::<LdLayoutDashboard> { icon: LdLayoutDashboard, width: 18, height: 18 }
                                             "Dashboard"
                                         }
                                     }
@@ -119,6 +124,7 @@ fn AppLayout() -> Element {
                                 SidebarMenuItem {
                                     Link { to: Route::Users {},
                                         SidebarMenuButton { active: matches!(route, Route::Users {}),
+                                            Icon::<LdUsers> { icon: LdUsers, width: 18, height: 18 }
                                             "Users"
                                         }
                                     }
@@ -126,6 +132,7 @@ fn AppLayout() -> Element {
                                 SidebarMenuItem {
                                     Link { to: Route::Products {},
                                         SidebarMenuButton { active: matches!(route, Route::Products {}),
+                                            Icon::<LdPackage> { icon: LdPackage, width: 18, height: 18 }
                                             "Products"
                                         }
                                     }
@@ -133,6 +140,7 @@ fn AppLayout() -> Element {
                                 SidebarMenuItem {
                                     Link { to: Route::Settings {},
                                         SidebarMenuButton { active: matches!(route, Route::Settings {}),
+                                            Icon::<LdSettings> { icon: LdSettings, width: 18, height: 18 }
                                             "Settings"
                                         }
                                     }
@@ -188,6 +196,9 @@ fn AppLayout() -> Element {
                         DropdownMenu {
                             DropdownMenuTrigger {
                                 Avatar {
+                                    if let Some(url) = profile.avatar_url.read().as_ref() {
+                                        AvatarImage { src: url.clone() }
+                                    }
                                     AvatarFallback {
                                         {profile.display_name.read().split_whitespace().filter_map(|w| w.chars().next()).take(2).collect::<String>().to_uppercase()}
                                     }

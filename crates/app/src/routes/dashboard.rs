@@ -1,5 +1,7 @@
 use crate::tier_gate::TierGate;
 use dioxus::prelude::*;
+use dioxus_free_icons::icons::ld_icons::{LdLock, LdLockOpen};
+use dioxus_free_icons::Icon;
 use server::api::{get_dashboard_stats, get_premium_analytics};
 use shared_types::UserTier;
 use shared_ui::{
@@ -449,7 +451,7 @@ fn AdminPanel(total_users: i64) -> Element {
 fn UpgradePrompt(tier_name: String, feature: String) -> Element {
     rsx! {
         div { class: "tier-gate-card tier-gate-upgrade",
-            div { class: "tier-gate-icon", "\u{1F513}" }
+            div { class: "tier-gate-icon", Icon::<LdLockOpen> { icon: LdLockOpen, width: 24, height: 24 } }
             h3 { class: "tier-gate-title", "Unlock {feature}" }
             p { class: "tier-gate-description",
                 "Upgrade to {tier_name} to access {feature} and more."
@@ -463,7 +465,7 @@ fn UpgradePrompt(tier_name: String, feature: String) -> Element {
 fn LockedSection(tier_name: String, feature: String) -> Element {
     rsx! {
         div { class: "tier-gate-card tier-gate-locked",
-            div { class: "tier-gate-icon", "\u{1F512}" }
+            div { class: "tier-gate-icon", Icon::<LdLock> { icon: LdLock, width: 24, height: 24 } }
             h3 { class: "tier-gate-title", "{feature}" }
             p { class: "tier-gate-description",
                 "This feature requires {tier_name} tier access."

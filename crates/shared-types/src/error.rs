@@ -106,6 +106,16 @@ impl AppError {
         }
     }
 
+    /// Extract per-field validation errors from a `ServerFnError.to_string()`.
+    ///
+    /// Parses the embedded `AppError` JSON and returns its `field_errors` map.
+    /// Returns an empty map if parsing fails or no field errors exist.
+    pub fn parse_field_errors(error_string: &str) -> HashMap<String, String> {
+        Self::from_server_error(error_string)
+            .map(|e| e.field_errors)
+            .unwrap_or_default()
+    }
+
     /// Extract a user-friendly error message from a `ServerFnError.to_string()`.
     ///
     /// Parses the embedded `AppError` JSON and returns its `message` field.
@@ -163,5 +173,92 @@ impl axum::response::IntoResponse for AppError {
         let status = axum::http::StatusCode::from_u16(self.status_code_u16())
             .unwrap_or(axum::http::StatusCode::INTERNAL_SERVER_ERROR);
         (status, axum::Json(self)).into_response()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn from_server_error_parses_raw_json() {
+        let json = r#"{"kind":"Unauthorized","message":"Invalid token"}"#;
+        let err = AppError::from_server_error(json).unwrap();
+        assert_eq!(err.kind, AppErrorKind::Unauthorized);
+        assert_eq!(err.message, "Invalid token");
+    }
+
+    #[test]
+    fn from_server_error_parses_wrapped_json() {
+        let wrapped = r#"error running server function: {"kind":"NotFound","message":"User not found"} (details: None)"#;
+        let err = AppError::from_server_error(wrapped).unwrap();
+        assert_eq!(err.kind, AppErrorKind::NotFound);
+        assert_eq!(err.message, "User not found");
+    }
+
+    #[test]
+    fn from_server_error_returns_none_for_garbage() {
+        assert!(AppError::from_server_error("not json at all").is_none());
+        assert!(AppError::from_server_error("").is_none());
+    }
+
+    #[test]
+    fn friendly_message_extracts_message_field() {
+        let json = r#"{"kind":"Forbidden","message":"Premium required"}"#;
+        assert_eq!(AppError::friendly_message(json), "Premium required");
+    }
+
+    #[test]
+    fn friendly_message_fallback_for_unparseable() {
+        assert_eq!(
+            AppError::friendly_message("garbage input"),
+            "Something went wrong. Please try again."
+        );
+    }
+
+    #[test]
+    fn not_found_error_has_correct_kind() {
+        let err = AppError::not_found("missing item");
+        assert_eq!(err.kind, AppErrorKind::NotFound);
+        assert_eq!(err.message, "missing item");
+        assert!(err.field_errors.is_empty());
+    }
+
+    #[test]
+    fn validation_error_includes_field_errors() {
+        let mut fields = HashMap::new();
+        fields.insert("email".to_string(), "invalid format".to_string());
+        let err = AppError::validation("Validation failed", fields);
+        assert_eq!(err.kind, AppErrorKind::ValidationError);
+        assert_eq!(err.field_errors.get("email").unwrap(), "invalid format");
+    }
+
+    #[test]
+    fn status_code_mapping() {
+        assert_eq!(AppError::not_found("").status_code_u16(), 404);
+        assert_eq!(
+            AppError::validation("", HashMap::new()).status_code_u16(),
+            422
+        );
+        assert_eq!(AppError::database("").status_code_u16(), 500);
+        assert_eq!(AppError::unauthorized("").status_code_u16(), 401);
+        assert_eq!(AppError::forbidden("").status_code_u16(), 403);
+        assert_eq!(AppError::internal("").status_code_u16(), 500);
+    }
+
+    #[test]
+    fn display_impl_formats_correctly() {
+        let err = AppError::unauthorized("bad credentials");
+        assert_eq!(format!("{}", err), "Unauthorized: bad credentials");
+    }
+
+    #[test]
+    fn error_roundtrip_through_json() {
+        let mut fields = HashMap::new();
+        fields.insert("name".to_string(), "too short".to_string());
+        let err = AppError::validation("Validation failed", fields);
+        let json = serde_json::to_string(&err).unwrap();
+        let parsed: AppError = serde_json::from_str(&json).unwrap();
+        assert_eq!(err, parsed);
     }
 }

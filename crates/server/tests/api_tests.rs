@@ -23,19 +23,24 @@ async fn health_check_returns_ok() {
 
 #[tokio::test]
 async fn create_and_get_user() {
+    let ts = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let username = format!("testuser_api_{ts}");
+
     let app = test_app().await;
 
     // Create a user
-    let (status, body) = post_json(
-        &app,
-        "/api/users",
-        r#"{"username":"testuser_api","display_name":"Test User"}"#,
-    )
-    .await;
+    let json = serde_json::json!({
+        "username": username,
+        "display_name": "Test User"
+    });
+    let (status, body) = post_json(&app, "/api/users", &json.to_string()).await;
     assert_eq!(status, StatusCode::CREATED);
 
     let user: User = serde_json::from_str(&body).unwrap();
-    assert_eq!(user.username, "testuser_api");
+    assert_eq!(user.username, username);
     assert_eq!(user.display_name, "Test User");
 
     // Get the user by ID
@@ -61,22 +66,31 @@ async fn list_users() {
 
 #[tokio::test]
 async fn update_user() {
+    let ts = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let username = format!("update_test_{ts}");
+
     let app = test_app().await;
 
     // Create
-    let (_, body) = post_json(
-        &app,
-        "/api/users",
-        r#"{"username":"update_test","display_name":"Before"}"#,
-    )
-    .await;
+    let create_json = serde_json::json!({
+        "username": username,
+        "display_name": "Before"
+    });
+    let (_, body) = post_json(&app, "/api/users", &create_json.to_string()).await;
     let user: User = serde_json::from_str(&body).unwrap();
 
     // Update
+    let update_json = serde_json::json!({
+        "username": username,
+        "display_name": "After"
+    });
     let (status, body) = put_json(
         &app,
         &format!("/api/users/{}", user.id),
-        r#"{"username":"update_test","display_name":"After"}"#,
+        &update_json.to_string(),
     )
     .await;
     assert_eq!(status, StatusCode::OK);
@@ -229,4 +243,103 @@ async fn validation_rejects_negative_price() {
 
     let err: AppError = serde_json::from_str(&body).unwrap();
     assert!(err.field_errors.contains_key("price"));
+}
+
+#[tokio::test]
+async fn update_nonexistent_user_returns_404() {
+    let app = test_app().await;
+
+    let (status, body) = put_json(
+        &app,
+        "/api/users/999999",
+        r#"{"username":"nobody","display_name":"Ghost"}"#,
+    )
+    .await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
+
+    let err: AppError = serde_json::from_str(&body).unwrap();
+    assert_eq!(err.kind, shared_types::AppErrorKind::NotFound);
+}
+
+#[tokio::test]
+async fn create_product_empty_name_returns_422() {
+    let app = test_app().await;
+
+    let (status, body) = post_json(
+        &app,
+        "/api/products",
+        r#"{"name":"","description":"desc","price":10.0,"category":"Hardware","status":"active"}"#,
+    )
+    .await;
+    assert_eq!(status, StatusCode::UNPROCESSABLE_ENTITY);
+
+    let err: AppError = serde_json::from_str(&body).unwrap();
+    assert_eq!(err.kind, shared_types::AppErrorKind::ValidationError);
+    assert!(err.field_errors.contains_key("name"));
+}
+
+#[tokio::test]
+async fn update_nonexistent_product_returns_404() {
+    let app = test_app().await;
+
+    let (status, body) = put_json(
+        &app,
+        "/api/products/999999",
+        r#"{"name":"Ghost","description":"nope","price":1.0,"category":"None","status":"active"}"#,
+    )
+    .await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
+
+    let err: AppError = serde_json::from_str(&body).unwrap();
+    assert_eq!(err.kind, shared_types::AppErrorKind::NotFound);
+}
+
+#[tokio::test]
+async fn delete_user_actually_removes() {
+    let ts = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let username = format!("delete_me_{ts}");
+
+    let app = test_app().await;
+
+    // Create
+    let json = serde_json::json!({
+        "username": username,
+        "display_name": "Delete Me"
+    });
+    let (_, body) = post_json(&app, "/api/users", &json.to_string()).await;
+    let user: User = serde_json::from_str(&body).unwrap();
+
+    // Delete
+    let (status, _) = delete(&app, &format!("/api/users/{}", user.id)).await;
+    assert_eq!(status, StatusCode::NO_CONTENT);
+
+    // Verify gone
+    let (status, _) = get(&app, &format!("/api/users/{}", user.id)).await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
+}
+
+#[tokio::test]
+async fn delete_product_actually_removes() {
+    let app = test_app().await;
+
+    // Create
+    let (_, body) = post_json(
+        &app,
+        "/api/products",
+        r#"{"name":"Deletable Widget","description":"bye","price":5.0,"category":"Hardware","status":"active"}"#,
+    )
+    .await;
+    let product: Product = serde_json::from_str(&body).unwrap();
+
+    // Delete
+    let (status, _) = delete(&app, &format!("/api/products/{}", product.id)).await;
+    assert_eq!(status, StatusCode::NO_CONTENT);
+
+    // Verify deleted — listing should not contain it
+    let (_, body) = get(&app, "/api/products").await;
+    let products: Vec<Product> = serde_json::from_str(&body).unwrap();
+    assert!(!products.iter().any(|p| p.id == product.id));
 }

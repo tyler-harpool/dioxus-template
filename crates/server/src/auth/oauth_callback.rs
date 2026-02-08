@@ -1,12 +1,12 @@
 use axum::{
-    extract::{Path, Query},
+    extract::{Path, Query, State},
     response::{IntoResponse, Redirect, Response},
 };
 use oauth2::{AuthorizationCode, TokenResponse};
 use shared_types::{OAuthProvider, UserTier};
+use sqlx::{Pool, Postgres};
 
 use super::{cookies, jwt, oauth, oauth_state};
-use crate::db::get_db;
 
 /// Query parameters received from the OAuth provider callback.
 #[derive(Debug, serde::Deserialize)]
@@ -19,6 +19,7 @@ pub struct CallbackQuery {
 /// Exchanges the authorization code for tokens, fetches user info,
 /// upserts the user, creates JWTs, sets HTTP-only cookies, and redirects to `/`.
 pub async fn oauth_callback(
+    State(pool): State<Pool<Postgres>>,
     Path(provider_str): Path<String>,
     Query(params): Query<CallbackQuery>,
 ) -> Result<Response, Response> {
@@ -85,8 +86,7 @@ pub async fn oauth_callback(
     }
 
     // Upsert user in the database
-    let db = get_db().await;
-    let (user_id, role, tier_str) = oauth::upsert_oauth_user(db, &user_info)
+    let (user_id, role, tier_str) = oauth::upsert_oauth_user(&pool, &user_info)
         .await
         .map_err(|e| error_redirect(&e))?;
 
@@ -107,7 +107,7 @@ pub async fn oauth_callback(
         jwt_refresh,
         expires_at
     )
-    .execute(db)
+    .execute(&pool)
     .await
     .map_err(|e| error_redirect(&format!("DB error: {}", e)))?;
 

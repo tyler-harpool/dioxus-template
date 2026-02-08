@@ -4,6 +4,9 @@ ENV_EXAMPLE    := .env.example
 SQLX_CACHE_DIR := .sqlx
 SIGNOZ_DIR     := signoz
 
+FLY_APP    := dioxus-app-twilight-thunder-8648
+FLY_DB     := 3x9jv02m9ver6qp7
+
 COMPOSE ?= docker compose
 
 # ── Local dev setup ──────────────────────────────────────────────────────────
@@ -64,11 +67,24 @@ signoz-down:
 		cd $(SIGNOZ_DIR)/deploy/docker && $(COMPOSE) down; \
 	fi
 
-## Start all services (Postgres + SigNoz)
-services: db-up signoz-up
+## Start MinIO for S3-compatible object storage
+minio-up:
+	$(COMPOSE) up -d minio
 
-## Stop all services
+## Create the avatars bucket in MinIO (requires mc CLI or curl)
+minio-init: minio-up
+	@echo "Waiting for MinIO..."
+	@until curl -sf http://localhost:9000/minio/health/live > /dev/null 2>&1; do sleep 1; done
+	@echo "MinIO is ready. Creating avatars bucket..."
+	@curl -sf -X PUT http://minioadmin:minioadmin@localhost:9000/avatars > /dev/null 2>&1 || true
+	@echo "Avatars bucket ready."
+
+## Start all services (Postgres + MinIO + SigNoz)
+services: db-up minio-up signoz-up
+
+## Stop all services (Postgres, MinIO, SigNoz)
 services-down: signoz-down db-down
+	@echo "All services stopped."
 
 # ── Build & check ────────────────────────────────────────────────────────────
 
@@ -97,14 +113,15 @@ clippy:
 
 # ── Test ─────────────────────────────────────────────────────────────────────
 
-## Run all tests
+## Run all tests (shared-types parallel, server integration serialized to avoid DB pool exhaustion)
 test:
-	cargo test --workspace
+	cargo test -p shared-types
+	cargo test -p server --features server -- --test-threads=1
 
 # ── Dev server ───────────────────────────────────────────────────────────────
 
-## Start the dioxus dev server (fullstack with server-side telemetry)
-dev:
+## Start the dioxus web dev server (fullstack with server-side telemetry)
+web:
 	dx serve --package app --platform web --fullstack
 
 ## Build for release
@@ -155,6 +172,14 @@ fly-deploy:
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
+## Promote a user to admin role in production (usage: make promote-user EMAIL=user@example.com)
+promote-user:
+	@test -n "$(EMAIL)" || (echo "Error: EMAIL is required. Usage: make promote-user EMAIL=user@example.com" && exit 1)
+	@echo "Promoting $(EMAIL) to admin on $(FLY_DB)..."
+	@PATH="/opt/homebrew/opt/libpq/bin:$$PATH" && export PATH && \
+		echo "UPDATE users SET role = 'admin' WHERE email = '$(EMAIL)' RETURNING id, username, email, role, tier;" \
+		| flyctl mpg connect $(FLY_DB)
+
 ## Show available targets
 help:
 	@echo "Available targets:"
@@ -162,6 +187,7 @@ help:
 
 .PHONY: setup env-file db-up db-down db-wait migrate sqlx-prepare db-reset \
         check check-server check-platforms fmt clippy test \
-        dev build mobile desktop help \
+        web build mobile desktop help promote-user \
         signoz-up signoz-down services services-down \
+        minio-up minio-init \
         deploy ci git-push fly-secrets fly-deploy

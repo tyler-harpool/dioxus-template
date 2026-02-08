@@ -5,6 +5,7 @@ use shared_ui::{
     Button, ButtonVariant, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,
     Input, Label, Separator,
 };
+use std::collections::HashMap;
 
 /// Login page with email/password and OAuth options.
 #[component]
@@ -13,6 +14,7 @@ pub fn Login() -> Element {
     let mut email = use_signal(String::new);
     let mut password = use_signal(String::new);
     let mut error_msg = use_signal(|| Option::<String>::None);
+    let mut field_errors = use_signal(HashMap::<String, String>::new);
     let mut loading = use_signal(|| false);
 
     // Redirect to dashboard if already authenticated
@@ -24,6 +26,7 @@ pub fn Login() -> Element {
         evt.prevent_default();
         loading.set(true);
         error_msg.set(None);
+        field_errors.set(HashMap::new());
 
         match server::api::login(email(), password()).await {
             Ok(user) => {
@@ -31,9 +34,13 @@ pub fn Login() -> Element {
                 navigator().push(Route::Dashboard {});
             }
             Err(e) => {
-                error_msg.set(Some(shared_types::AppError::friendly_message(
-                    &e.to_string(),
-                )));
+                let err_str = e.to_string();
+                let fe = shared_types::AppError::parse_field_errors(&err_str);
+                if fe.is_empty() {
+                    error_msg.set(Some(shared_types::AppError::friendly_message(&err_str)));
+                } else {
+                    field_errors.set(fe);
+                }
             }
         }
         loading.set(false);
@@ -109,6 +116,9 @@ pub fn Login() -> Element {
                                 value: email(),
                                 on_input: move |e: FormEvent| email.set(e.value()),
                             }
+                            if let Some(err) = field_errors().get("email") {
+                                div { class: "auth-field-error", "{err}" }
+                            }
                         }
                         div { class: "auth-field",
                             Label { html_for: "password", "Password" }
@@ -118,6 +128,9 @@ pub fn Login() -> Element {
                                 placeholder: "Enter your password",
                                 value: password(),
                                 on_input: move |e: FormEvent| password.set(e.value()),
+                            }
+                            if let Some(err) = field_errors().get("password") {
+                                div { class: "auth-field-error", "{err}" }
                             }
                         }
                         button {

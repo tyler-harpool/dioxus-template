@@ -415,7 +415,16 @@ pub async fn register(
     display_name: String,
 ) -> Result<AuthUser, ServerFnError> {
     use crate::auth::{cookies, jwt, password as pw};
-    use shared_types::AppError;
+    use shared_types::{AppError, RegisterRequest};
+
+    let req = RegisterRequest {
+        username: username.clone(),
+        email: email.clone(),
+        password: password.clone(),
+        display_name: display_name.clone(),
+    };
+    req.validate_request()
+        .map_err(|e| e.into_server_fn_error())?;
 
     let password_hash = pw::hash_password(&password)
         .map_err(|e| AppError::internal(e.to_string()).into_server_fn_error())?;
@@ -474,7 +483,14 @@ pub async fn register(
 #[server]
 pub async fn login(email: String, password: String) -> Result<AuthUser, ServerFnError> {
     use crate::auth::{cookies, jwt, password as pw};
-    use shared_types::AppError;
+    use shared_types::{AppError, LoginRequest};
+
+    let req = LoginRequest {
+        email: email.clone(),
+        password: password.clone(),
+    };
+    req.validate_request()
+        .map_err(|e| e.into_server_fn_error())?;
 
     let db = get_db().await;
     let user = sqlx::query!(
@@ -608,6 +624,132 @@ pub async fn logout() -> Result<(), ServerFnError> {
     cookies::schedule_clear_cookies();
 
     Ok(())
+}
+
+/// Update the current user's profile (display name and email).
+#[cfg_attr(feature = "server", tracing::instrument)]
+#[server]
+pub async fn update_profile(
+    display_name: String,
+    email: String,
+) -> Result<AuthUser, ServerFnError> {
+    use crate::auth::{cookies, jwt};
+    use shared_types::{AppError, UpdateProfileRequest};
+
+    // Validate the request
+    let req = UpdateProfileRequest {
+        display_name: display_name.clone(),
+        email: email.clone(),
+    };
+    req.validate_request()
+        .map_err(|e| e.into_server_fn_error())?;
+
+    // Extract user ID from JWT
+    let ctx = dioxus::fullstack::FullstackContext::current();
+    let headers = ctx.as_ref().map(|c| c.parts_mut().headers.clone());
+
+    let headers = headers
+        .ok_or_else(|| AppError::unauthorized("Authentication required").into_server_fn_error())?;
+
+    let token = cookies::extract_access_token(&headers)
+        .ok_or_else(|| AppError::unauthorized("Authentication required").into_server_fn_error())?;
+
+    let claims = jwt::validate_access_token(&token)
+        .map_err(|_| AppError::unauthorized("Invalid token").into_server_fn_error())?;
+
+    let db = get_db().await;
+    let user = sqlx::query!(
+        "UPDATE users SET display_name = $2, email = $3 WHERE id = $1 RETURNING id, username, display_name, email, role, tier, avatar_url",
+        claims.sub,
+        display_name,
+        email
+    )
+    .fetch_optional(db)
+    .await
+    .map_err(|e| e.into_app_error().into_server_fn_error())?
+    .ok_or_else(|| AppError::not_found("User not found").into_server_fn_error())?;
+
+    Ok(AuthUser {
+        id: user.id,
+        username: user.username,
+        display_name: user.display_name,
+        email: user.email.unwrap_or_default(),
+        role: user.role,
+        tier: UserTier::from_str_or_default(&user.tier),
+        avatar_url: user.avatar_url,
+    })
+}
+
+/// Upload a user avatar via base64-encoded file data.
+#[cfg_attr(feature = "server", tracing::instrument(skip(file_data)))]
+#[server]
+pub async fn upload_user_avatar(
+    file_data: String,
+    content_type: String,
+) -> Result<AuthUser, ServerFnError> {
+    use crate::auth::{cookies, jwt};
+    use shared_types::AppError;
+
+    let allowed = ["image/jpeg", "image/png", "image/webp"];
+    if !allowed.contains(&content_type.as_str()) {
+        return Err(AppError::validation(
+            "Only JPEG, PNG, and WebP images are allowed",
+            Default::default(),
+        )
+        .into_server_fn_error());
+    }
+
+    let bytes = base64::Engine::decode(
+        &base64::engine::general_purpose::STANDARD,
+        &file_data,
+    )
+    .map_err(|e| {
+        AppError::validation(format!("Invalid file data: {}", e), Default::default())
+            .into_server_fn_error()
+    })?;
+
+    if bytes.len() > 2 * 1024 * 1024 {
+        return Err(
+            AppError::validation("Avatar must be under 2 MB", Default::default())
+                .into_server_fn_error(),
+        );
+    }
+
+    let ctx = dioxus::fullstack::FullstackContext::current();
+    let headers = ctx
+        .as_ref()
+        .map(|c| c.parts_mut().headers.clone())
+        .ok_or_else(|| AppError::unauthorized("Authentication required").into_server_fn_error())?;
+
+    let token = cookies::extract_access_token(&headers)
+        .ok_or_else(|| AppError::unauthorized("Authentication required").into_server_fn_error())?;
+
+    let claims = jwt::validate_access_token(&token)
+        .map_err(|_| AppError::unauthorized("Invalid token").into_server_fn_error())?;
+
+    let avatar_url = crate::s3::upload_avatar(claims.sub, &content_type, &bytes)
+        .await
+        .map_err(|e| AppError::internal(e).into_server_fn_error())?;
+
+    let db = get_db().await;
+    let user = sqlx::query!(
+        "UPDATE users SET avatar_url = $2 WHERE id = $1 RETURNING id, username, display_name, email, role, tier, avatar_url",
+        claims.sub,
+        avatar_url
+    )
+    .fetch_one(db)
+    .await
+    .map_err(|e| e.into_app_error().into_server_fn_error())?;
+
+    Ok(AuthUser {
+        id: user.id,
+        username: user.username,
+        display_name: user.display_name,
+        email: user.email.unwrap_or_default(),
+        role: user.role,
+        tier: UserTier::from_str_or_default(&user.tier),
+        avatar_url: user.avatar_url,
+    })
 }
 
 /// Get the OAuth authorization URL for a given provider.

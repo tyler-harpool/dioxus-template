@@ -16,3 +16,33 @@ pub fn verify_password(password: &str, hash: &str) -> Result<bool, argon2::passw
         .verify_password(password.as_bytes(), &parsed_hash)
         .is_ok())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn hash_and_verify_succeeds() {
+        let password = "correct-horse-battery-staple";
+        let hash = hash_password(password).unwrap();
+        assert!(verify_password(password, &hash).unwrap());
+    }
+
+    #[test]
+    fn wrong_password_fails() {
+        let hash = hash_password("right-password").unwrap();
+        assert!(!verify_password("wrong-password", &hash).unwrap());
+    }
+
+    #[test]
+    fn different_hashes_for_same_password() {
+        let password = "same-password";
+        let hash1 = hash_password(password).unwrap();
+        let hash2 = hash_password(password).unwrap();
+        // Different salts produce different hashes
+        assert_ne!(hash1, hash2);
+        // Both still verify correctly
+        assert!(verify_password(password, &hash1).unwrap());
+        assert!(verify_password(password, &hash2).unwrap());
+    }
+}

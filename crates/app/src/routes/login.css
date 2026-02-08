@@ -102,6 +102,13 @@
     white-space: nowrap;
 }
 
+/* Per-field validation errors */
+.auth-field-error {
+    color: var(--color-error, #ff4444);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
 /* Loading state for auth guard */
 .auth-guard-loading {
     display: flex;
