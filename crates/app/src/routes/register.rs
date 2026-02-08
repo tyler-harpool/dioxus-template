@@ -33,7 +33,9 @@ pub fn Register() -> Element {
                 navigator().push(Route::Dashboard {});
             }
             Err(e) => {
-                error_msg.set(Some(e.to_string()));
+                error_msg.set(Some(shared_types::AppError::friendly_message(
+                    &e.to_string(),
+                )));
             }
         }
         loading.set(false);
@@ -48,7 +50,9 @@ pub fn Register() -> Element {
                         navigator().push(NavigationTarget::<Route>::External(url));
                     }
                     Err(e) => {
-                        error_msg.set(Some(format!("OAuth error: {}", e)));
+                        error_msg.set(Some(shared_types::AppError::friendly_message(
+                            &e.to_string(),
+                        )));
                     }
                 }
             });

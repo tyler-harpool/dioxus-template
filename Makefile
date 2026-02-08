@@ -122,7 +122,7 @@ desktop:
 # ── CI/CD ────────────────────────────────────────────────────────────────────
 
 ## Run full CI pipeline: fmt, check, clippy, test, sqlx-prepare, push, deploy
-deploy: ci git-push fly-deploy
+deploy: ci git-push fly-secrets fly-deploy
 	@echo "Deploy complete."
 
 ## Run CI checks only (no push/deploy)
@@ -140,6 +140,15 @@ git-push:
 	fi
 	git push origin $$(git branch --show-current)
 
+## Sync .env.production secrets to Fly.io, rotating JWT_SECRET each deploy
+fly-secrets:
+	@test -f .env.production || (echo "Error: .env.production not found. Copy .env.example and fill in prod values." && exit 1)
+	@NEW_SECRET=$$(openssl rand -base64 48) && \
+		sed -i '' "s|^JWT_SECRET=.*|JWT_SECRET=$$NEW_SECRET|" .env.production && \
+		echo "Rotated JWT_SECRET."
+	@grep -v '^\s*#' .env.production | grep -v '^\s*$$' | flyctl secrets import --stage
+	@echo "Secrets staged to Fly.io (applied on next deploy)."
+
 ## Deploy to Fly.io
 fly-deploy:
 	flyctl deploy --remote-only
@@ -155,4 +164,4 @@ help:
         check check-server check-platforms fmt clippy test \
         dev build mobile desktop help \
         signoz-up signoz-down services services-down \
-        deploy ci git-push fly-deploy
+        deploy ci git-push fly-secrets fly-deploy

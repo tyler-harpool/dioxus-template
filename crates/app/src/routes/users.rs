@@ -77,7 +77,10 @@ pub fn Users() -> Element {
                     users.restart();
                 }
                 Err(err) => {
-                    toast.error(format!("Error: {err}"), ToastOptions::new());
+                    toast.error(
+                        shared_types::AppError::friendly_message(&err.to_string()),
+                        ToastOptions::new(),
+                    );
                 }
             }
         });
@@ -92,7 +95,10 @@ pub fn Users() -> Element {
             for id in &ids {
                 if let Err(err) = delete_user(*id).await {
                     toast.error(
-                        format!("Failed to delete user {id}: {err}"),
+                        format!(
+                            "Failed to delete user {id}: {}",
+                            shared_types::AppError::friendly_message(&err.to_string())
+                        ),
                         ToastOptions::new(),
                     );
                     had_error = true;
@@ -230,7 +236,7 @@ pub fn Users() -> Element {
                                                                                                 }
                                                                                                 Err(err) => {
                                                                                                     toast.error(
-                                                                                                        format!("Failed to update tier: {err}"),
+                                                                                                        format!("Failed to update tier: {}", shared_types::AppError::friendly_message(&err.to_string())),
                                                                                                         ToastOptions::new(),
                                                                                                     );
                                                                                                 }
@@ -327,7 +333,7 @@ pub fn Users() -> Element {
                                                                     users.restart();
                                                                 }
                                                                 Err(err) => {
-                                                                    toast.error(format!("Error: {err}"), ToastOptions::new());
+                                                                    toast.error(shared_types::AppError::friendly_message(&err.to_string()), ToastOptions::new());
                                                                 }
                                                             }
                                                         });

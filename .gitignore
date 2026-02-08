@@ -2,5 +2,6 @@
 *.db
 *.db-journal
 .env
+.env.production
 dist/
 signoz/

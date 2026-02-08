@@ -123,7 +123,10 @@ pub fn Products() -> Element {
                     );
                 }
                 Err(err) => {
-                    toast.error(format!("Error saving product: {err}"), ToastOptions::new());
+                    toast.error(
+                        shared_types::AppError::friendly_message(&err.to_string()),
+                        ToastOptions::new(),
+                    );
                 }
             }
         });
@@ -139,7 +142,7 @@ pub fn Products() -> Element {
                 }
                 Err(err) => {
                     toast.error(
-                        format!("Error deleting product: {err}"),
+                        shared_types::AppError::friendly_message(&err.to_string()),
                         ToastOptions::new(),
                     );
                 }

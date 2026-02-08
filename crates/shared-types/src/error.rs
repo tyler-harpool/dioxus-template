@@ -87,8 +87,35 @@ impl AppError {
     }
 
     /// Parse an AppError from a ServerFnError message string (client-side).
+    ///
+    /// `ServerFnError::to_string()` wraps the payload like:
+    ///   `error running server function: {"kind":"Unauthorized",...} (details: None)`
+    /// This method extracts the embedded JSON and parses it.
     pub fn from_server_error(error_message: &str) -> Option<Self> {
-        serde_json::from_str(error_message).ok()
+        // Try direct parse first (in case the string is raw JSON)
+        if let Ok(err) = serde_json::from_str::<Self>(error_message) {
+            return Some(err);
+        }
+        // Extract the JSON object embedded between the first `{` and last `}`
+        let start = error_message.find('{')?;
+        let end = error_message.rfind('}')?;
+        if end > start {
+            serde_json::from_str(&error_message[start..=end]).ok()
+        } else {
+            None
+        }
+    }
+
+    /// Extract a user-friendly error message from a `ServerFnError.to_string()`.
+    ///
+    /// Parses the embedded `AppError` JSON and returns its `message` field.
+    /// Falls back to a generic message if parsing fails.
+    pub fn friendly_message(error_string: &str) -> String {
+        if let Some(app_error) = Self::from_server_error(error_string) {
+            app_error.message
+        } else {
+            "Something went wrong. Please try again.".to_string()
+        }
     }
 
     #[cfg_attr(not(feature = "server"), allow(dead_code))]
